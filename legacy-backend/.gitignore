@@ -1,0 +1,10 @@
+node_modules/
+.env
+*.log
+out.txt
+proc_out.txt
+txt.txt
+hosts.txt
+tsc-errors.txt
+lint_report.txt
+lint_results.txt

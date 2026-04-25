@@ -1,0 +1,68 @@
+<svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="600" rx="20" fill="#030A05"/>
+  
+  <!-- Header -->
+  <text x="400" y="40" text-anchor="middle" fill="#22C55E" font-family="Arial, sans-serif" font-size="28" font-weight="bold">AgriTraceTN System Architecture</text>
+  <text x="400" y="65" text-anchor="middle" fill="#6B7280" font-family="Arial, sans-serif" font-size="14">Blockchain-Powered Agri-Supply Chain</text>
+
+  <!-- Layer 1: Frontend -->
+  <rect x="50" y="100" width="700" height="100" rx="10" fill="#111916" stroke="#22C55E" stroke-opacity="0.3"/>
+  <text x="400" y="125" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="18" font-weight="bold">PRESENTATION LAYER (Next.js 14)</text>
+  <g transform="translate(70, 140)">
+    <rect width="180" height="40" rx="5" fill="#0A1A0E" stroke="#22C55E" stroke-width="1"/>
+    <text x="90" y="25" text-anchor="middle" fill="#4ADE80" font-family="Arial, sans-serif" font-size="12">Tamil Voice Input</text>
+  </g>
+  <g transform="translate(310, 140)">
+    <rect width="180" height="40" rx="5" fill="#0A1A0E" stroke="#3B82F6" stroke-width="1"/>
+    <text x="90" y="25" text-anchor="middle" fill="#60A5FA" font-family="Arial, sans-serif" font-size="12">Animated Dashboards</text>
+  </g>
+  <g transform="translate(550, 140)">
+    <rect width="180" height="40" rx="5" fill="#0A1A0E" stroke="#F59E0B" stroke-width="1"/>
+    <text x="90" y="25" text-anchor="middle" fill="#FBBF24" font-family="Arial, sans-serif" font-size="12">QR Scanner / Trace</text>
+  </g>
+
+  <!-- Arrows -->
+  <path d="M400 200 V240" stroke="#4ADE80" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arrowhead)"/>
+
+  <!-- Layer 2: Offline/Sync -->
+  <rect x="50" y="240" width="700" height="100" rx="10" fill="#111916" stroke="#3B82F6" stroke-opacity="0.3"/>
+  <text x="400" y="265" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="18" font-weight="bold">LOGIC & OFFLINE LAYER</text>
+  <g transform="translate(150, 280)">
+    <rect width="220" height="40" rx="5" fill="#0A1A0E" stroke="#3B82F6" stroke-width="1"/>
+    <text x="110" y="25" text-anchor="middle" fill="#60A5FA" font-family="Arial, sans-serif" font-size="12">IndexedDB Offline Queue</text>
+  </g>
+  <g transform="translate(430, 280)">
+    <rect width="220" height="40" rx="5" fill="#0A1A0E" stroke="#A855F7" stroke-width="1"/>
+    <text x="110" y="25" text-anchor="middle" fill="#D8B4FE" font-family="Arial, sans-serif" font-size="12">Role-Based Access (PWA)</text>
+  </g>
+
+  <!-- Arrows -->
+  <path d="M400 340 V380" stroke="#60A5FA" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arrowhead)"/>
+
+  <!-- Layer 3: Integration -->
+  <rect x="50" y="380" width="700" height="100" rx="10" fill="#111916" stroke="#A855F7" stroke-opacity="0.3"/>
+  <text x="400" y="405" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="18" font-weight="bold">BLOCKCHAIN INTEGRATION</text>
+  <g transform="translate(150, 420)">
+    <rect width="220" height="40" rx="5" fill="#0A1A0E" stroke="#A855F7" stroke-width="1"/>
+    <text x="110" y="25" text-anchor="middle" fill="#D8B4FE" font-family="Arial, sans-serif" font-size="12">wagmi / viem Hooks</text>
+  </g>
+  <g transform="translate(430, 420)">
+    <rect width="220" height="40" rx="5" fill="#0A1A0E" stroke="#EC4899" stroke-width="1"/>
+    <text x="110" y="25" text-anchor="middle" fill="#F472B6" font-family="Arial, sans-serif" font-size="12">Alchemy RPC Provider</text>
+  </g>
+
+  <!-- Arrows -->
+  <path d="M400 480 V510" stroke="#A855F7" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arrowhead)"/>
+
+  <!-- Layer 4: Blockchain -->
+  <rect x="150" y="510" width="500" height="60" rx="30" fill="#8247E5" fill-opacity="0.1" stroke="#8247E5" stroke-width="2"/>
+  <text x="400" y="545" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="20" font-weight="bold">POLYGON MUMBAI BLOCKCHAIN</text>
+  
+  <!-- Marker Definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#6B7280" />
+    </marker>
+  </defs>
+</svg>

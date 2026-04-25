@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriTraceIndia — Live DB Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green: #22c55e;
+            --blue: #3b82f6;
+            --amber: #f59e0b;
+            --purple: #a855f7;
+            --red: #ef4444;
+            --pink: #ec4899;
+            --bg: #030904;
+            --card: rgba(10, 20, 12, 0.97);
+            --border: rgba(34, 197, 94, 0.12);
+            --text: #d1d5db;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            background-image:
+                radial-gradient(circle at 5% 5%, rgba(34,197,94,0.06) 0%, transparent 40%),
+                radial-gradient(circle at 95% 95%, rgba(59,130,246,0.06) 0%, transparent 40%),
+                repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(34,197,94,0.01) 40px, rgba(34,197,94,0.01) 41px),
+                repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(34,197,94,0.01) 40px, rgba(34,197,94,0.01) 41px);
+        }
+
+        .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--green), var(--blue)); width: 0; transition: width 0.4s; z-index: 9999; box-shadow: 0 0 10px var(--green); }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 28px 24px; }
+
+        /* ── HEADER ── */
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 28px; padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap; gap: 16px;
+        }
+        .header-title { display: flex; align-items: center; gap: 14px; }
+        .logo {
+            width: 46px; height: 46px; border-radius: 14px;
+            background: linear-gradient(135deg, #16a34a, #059669);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; box-shadow: 0 0 20px rgba(34,197,94,0.3);
+        }
+        h1 { font-size: 1.8rem; font-weight: 900; color: #fff; }
+        h1 span { color: var(--green); }
+        .header-sub { font-size: 0.8rem; color: #555; margin-top: 2px; }
+
+        .connection-badge {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 16px; border-radius: 20px;
+            background: rgba(34,197,94,0.05); border: 1px solid var(--border);
+            font-size: 0.75rem; font-family: 'JetBrains Mono', monospace;
+            color: var(--green);
+        }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+        /* ── STATS CARDS ── */
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px; margin-bottom: 24px;
+        }
+        .stat-card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 16px; padding: 18px 20px;
+            position: relative; overflow: hidden;
+        }
+        .stat-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+        }
+        .stat-card.green::before { background: linear-gradient(90deg, var(--green), #16a34a); }
+        .stat-card.blue::before { background: linear-gradient(90deg, var(--blue), #2563eb); }
+        .stat-card.amber::before { background: linear-gradient(90deg, var(--amber), #d97706); }
+        .stat-card.purple::before { background: linear-gradient(90deg, var(--purple), #7c3aed); }
+        .stat-card.pink::before { background: linear-gradient(90deg, var(--pink), #db2777); }
+        .stat-card.red::before { background: linear-gradient(90deg, var(--red), #dc2626); }
+
+        .stat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: #555; margin-bottom: 6px; }
+        .stat-value { font-size: 2rem; font-weight: 900; color: #fff; line-height: 1; }
+        .stat-icon { position: absolute; right: 16px; top: 16px; font-size: 1.4rem; opacity: 0.3; }
+
+        /* ── TOOLBAR ── */
+        .toolbar {
+            display: flex; gap: 10px; margin-bottom: 18px;
+            flex-wrap: wrap; align-items: center;
+        }
+        .search-box {
+            flex: 1; min-width: 200px;
+            background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+            border-radius: 10px; padding: 9px 16px; color: #fff;
+            font-family: 'Outfit', sans-serif; font-size: 0.85rem;
+            outline: none; transition: border-color 0.2s;
+        }
+        .search-box:focus { border-color: rgba(34,197,94,0.4); }
+        .search-box::placeholder { color: #555; }
+
+        .filter-select {
+            background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+            border-radius: 10px; padding: 9px 14px; color: #999;
+            font-family: 'Outfit', sans-serif; font-size: 0.82rem;
+            outline: none; cursor: pointer;
+        }
+        .filter-select option { background: #111; }
+
+        .refresh-btn {
+            background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2);
+            border-radius: 10px; padding: 9px 18px; color: var(--green);
+            font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.82rem;
+            cursor: pointer; transition: 0.2s; white-space: nowrap;
+        }
+        .refresh-btn:hover { background: rgba(34,197,94,0.15); }
+
+        .export-btn {
+            background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2);
+            border-radius: 10px; padding: 9px 18px; color: var(--blue);
+            font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.82rem;
+            cursor: pointer; transition: 0.2s; white-space: nowrap;
+        }
+        .export-btn:hover { background: rgba(59,130,246,0.15); }
+
+        /* ── TABS ── */
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn {
+            padding: 9px 18px; border-radius: 12px;
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+            color: #666; cursor: pointer; font-weight: 600; font-size: 0.82rem;
+            transition: 0.2s; display: flex; align-items: center; gap: 6px;
+        }
+        .tab-btn:hover { color: #aaa; border-color: rgba(255,255,255,0.1); }
+        .tab-btn.active { background: var(--green); color: #000; border-color: var(--green); box-shadow: 0 4px 14px rgba(34,197,94,0.25); }
+        .tab-count {
+            background: rgba(0,0,0,0.2); border-radius: 6px;
+            padding: 1px 6px; font-size: 0.7rem; font-weight: 900;
+        }
+        .tab-btn.active .tab-count { background: rgba(0,0,0,0.25); }
+
+        /* ── TABLE ── */
+        .table-wrapper {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 18px; overflow: hidden;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+        }
+        .table-header-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 20px; border-bottom: 1px solid var(--border);
+            background: rgba(255,255,255,0.01);
+        }
+        .table-title { font-weight: 700; color: #fff; font-size: 0.95rem; }
+        .record-count { font-size: 0.75rem; color: #555; font-family: 'JetBrains Mono', monospace; }
+
+        .table-scroll { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            background: rgba(255,255,255,0.02); text-align: left;
+            padding: 12px 16px; color: #888; font-weight: 700;
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.8px;
+            border-bottom: 1px solid var(--border); white-space: nowrap;
+        }
+        td {
+            padding: 13px 16px; border-bottom: 1px solid rgba(255,255,255,0.025);
+            font-size: 0.85rem; vertical-align: middle;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(34,197,94,0.025); }
+
+        .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #6b7280; }
+        .text-white { color: #fff !important; font-weight: 600; }
+        .text-green { color: var(--green); }
+        .text-blue { color: var(--blue); }
+        .text-amber { color: var(--amber); }
+        .text-purple { color: var(--purple); }
+        .text-red { color: var(--red); }
+        .text-pink { color: var(--pink); }
+
+        /* ── BADGES ── */
+        .badge {
+            display: inline-block; padding: 3px 8px; border-radius: 6px;
+            font-size: 0.68rem; font-weight: 700; white-space: nowrap;
+            border: 1px solid transparent;
+        }
+        .badge-green   { color: var(--green);  background: rgba(34,197,94,0.1);  border-color: rgba(34,197,94,0.2); }
+        .badge-blue    { color: var(--blue);   background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.2); }
+        .badge-amber   { color: var(--amber);  background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.2); }
+        .badge-purple  { color: var(--purple); background: rgba(168,85,247,0.1); border-color: rgba(168,85,247,0.2); }
+        .badge-red     { color: var(--red);    background: rgba(239,68,68,0.1);  border-color: rgba(239,68,68,0.2); }
+        .badge-pink    { color: var(--pink);   background: rgba(236,72,153,0.1); border-color: rgba(236,72,153,0.2); }
+        .badge-gray    { color: #888;          background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.08); }
+
+        /* ── WORKFLOW INDICATOR ── */
+        .workflow-indicator {
+            display: flex; align-items: center; gap: 4px;
+            font-size: 0.65rem; color: #555; margin-top: 3px;
+        }
+        .wf-step { color: #333; }
+        .wf-step.done { color: var(--green); }
+        .wf-step.active { color: var(--amber); font-weight: bold; }
+
+        /* ── EMPTY STATE ── */
+        .empty-state {
+            text-align: center; padding: 60px 20px; color: #444;
+        }
+        .empty-state .empty-icon { font-size: 3rem; margin-bottom: 12px; opacity: 0.4; }
+        .empty-state p { font-size: 0.9rem; }
+
+        /* ── LAST UPDATED ── */
+        .footer-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 20px; font-size: 0.75rem; color: #3a3a3a;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* ── CHAIN PREVIEW ── */
+        .chain-mini {
+            display: flex; align-items: center; gap: 3px;
+            font-size: 0.65rem;
+        }
+        .chain-dot { width: 6px; height: 6px; border-radius: 2px; background: var(--green); }
+        .chain-line { width: 8px; height: 1px; background: rgba(34,197,94,0.3); }
+
+        /* ── ROLE BADGES ── */
+        .role-farmer   { background: rgba(245,158,11,0.08); color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); }
+        .role-agri     { background: rgba(59,130,246,0.08); color: #3b82f6; border: 1px solid rgba(59,130,246,0.2); }
+        .role-retailer { background: rgba(168,85,247,0.08); color: #a855f7; border: 1px solid rgba(168,85,247,0.2); }
+        .role-consumer { background: rgba(245,158,11,0.08); color: #fbbf24; border: 1px solid rgba(245,158,11,0.2); }
+        .role-tahsildar { background: rgba(139,92,246,0.08); color: #8b5cf6; border: 1px solid rgba(139,92,246,0.2); }
+        .role-iags     { background: rgba(236,72,153,0.08); color: #ec4899; border: 1px solid rgba(236,72,153,0.2); }
+
+        /* ── MINIBAR CHART ── */
+        .mini-bar {
+            height: 4px; border-radius: 3px; background: rgba(255,255,255,0.05);
+            margin-top: 4px; overflow: hidden; width: 80px;
+        }
+        .mini-bar-fill { height: 100%; border-radius: 3px; background: var(--green); }
+
+        /* Skeleton Loader */
+        .skeleton { animation: shimmer 1.5s infinite; }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .skeleton td {
+            background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.04) 50%, rgba(255,255,255,0.02) 75%);
+            background-size: 200% 100%;
+        }
+
+        /* Tooltip */
+        .has-tip { cursor: help; border-bottom: 1px dashed rgba(255,255,255,0.1); }
+        [title]:hover::after { content: attr(title); }
+    </style>
+</head>
+
+<body>
+    <div class="progress-bar" id="progress"></div>
+
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-title">
+                <div class="logo">🌾</div>
+                <div>
+                    <h1>Agri<span>Trace</span>India <span style="font-size:0.9rem; color:#555; font-weight:400">| Live DB Explorer</span></h1>
+                    <div class="header-sub">TN-Hackathon · Blockchain-Backed Agri Supply Chain · MongoDB Atlas</div>
+                </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <div style="font-size:0.72rem; color:#444; font-family:'JetBrains Mono',monospace;" id="last-updated">Last sync: —</div>
+                <div class="connection-badge">
+                    <div class="dot" id="status-dot"></div>
+                    <span id="status-text">Connecting...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-grid" id="stats-grid">
+            <div class="stat-card green"><div class="stat-label">Harvest Apps</div><div class="stat-value" id="stat-apps">—</div><div class="stat-icon">📋</div></div>
+            <div class="stat-card blue"><div class="stat-label">Agri Officer Approved</div><div class="stat-value" id="stat-approved">—</div><div class="stat-icon">✅</div></div>
+            <div class="stat-card amber"><div class="stat-label">On Marketplace</div><div class="stat-value" id="stat-market">—</div><div class="stat-icon">🛒</div></div>
+            <div class="stat-card purple"><div class="stat-label">Relief Claims</div><div class="stat-value" id="stat-relief">—</div><div class="stat-icon">🆘</div></div>
+            <div class="stat-card pink"><div class="stat-label">IAgS / Admin</div><div class="stat-value" id="stat-iags">—</div><div class="stat-icon">🏛️</div></div>
+            <div class="stat-card red"><div class="stat-label">Blockchain Events</div><div class="stat-value" id="stat-events">—</div><div class="stat-icon">⛓️</div></div>
+        </div>
+
+        <!-- TOOLBAR -->
+        <div class="toolbar">
+            <input class="search-box" type="text" id="search-box" placeholder="🔍  Search by ID, name, crop, district..." oninput="applySearch()">
+            <select class="filter-select" id="status-filter" onchange="applySearch()">
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Agri Officer Approved</option>
+                <option value="rejected">Rejected</option>
+                <option value="batch_recorded">Batch Recorded</option>
+                <option value="listed">Listed</option>
+                <option value="partially_sold">Partially Sold</option>
+                <option value="sold">Sold Out</option>
+                <option value="expired">Expired</option>
+            </select>
+            <button class="refresh-btn" onclick="fetchAll()">⟳ Refresh</button>
+            <button class="export-btn" onclick="exportCSV()">↓ Export CSV</button>
+        </div>
+
+        <!-- TABS -->
+        <div class="tabs">
+            <button class="tab-btn active" id="tab-harvest" onclick="showTab('harvest')">🌾 Harvest Apps <span class="tab-count" id="cnt-harvest">0</span></button>
+            <button class="tab-btn" id="tab-marketplace" onclick="showTab('marketplace')">🛒 Marketplace <span class="tab-count" id="cnt-marketplace">0</span></button>
+            <button class="tab-btn" id="tab-relief" onclick="showTab('relief')">🆘 Relief Claims <span class="tab-count" id="cnt-relief">0</span></button>
+            <button class="tab-btn" id="tab-events" onclick="showTab('events')">⛓️ Blockchain Log <span class="tab-count" id="cnt-events">0</span></button>
+            <button class="tab-btn" id="tab-users" onclick="showTab('users')">👥 Stakeholders <span class="tab-count" id="cnt-users">0</span></button>
+        </div>
+
+        <!-- TABLE AREA -->
+        <div class="table-wrapper">
+            <div class="table-header-bar">
+                <span class="table-title" id="table-title">🌾 Harvest Applications</span>
+                <span class="record-count" id="record-count">Loading...</span>
+            </div>
+            <div class="table-scroll">
+                <table>
+                    <thead id="table-head"></thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+                <div id="empty-state" class="empty-state" style="display:none;">
+                    <div class="empty-icon">📭</div>
+                    <p>No records found matching your search.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer-bar">
+            <span>© 2026 AgriTraceIndia · TN-Hackathon · POLYGON AMOY NETWORK</span>
+            <span id="footer-time">Auto-refreshing every 5s</span>
+        </div>
+    </div>
+
+    <script>
+        // ─── State ───────────────────────────────────────────────────────────────
+        let DATA = { harvest: [], marketplace: [], relief: [], events: [], users: [] };
+        let currentTab = 'harvest';
+        let filteredData = [];
+
+        const API = window.location.hostname === 'localhost'
+            ? 'http://localhost:5000'
+            : `http://${window.location.hostname}:5000`;
+
+        // ─── Tab Config ──────────────────────────────────────────────────────────
+        const TAB_CONFIG = {
+            harvest: {
+                title: '🌾 Harvest Applications',
+                cols: ['App ID', 'Crop', 'Farmer', 'District / Taluk', 'Qty (kg)', 'Farmer Price', 'Agri Officer', 'Quality', 'Status', 'Blockchain', 'Submitted'],
+            },
+            marketplace: {
+                title: '🛒 Marketplace Listings',
+                cols: ['Batch ID', 'Crop', 'Farmer', 'District', 'Total (kg)', 'Sold (kg)', 'Remaining', 'Price/kg', 'Revenue', 'Status', 'Listed On'],
+            },
+            relief: {
+                title: '🆘 Relief Fund Claims',
+                cols: ['Claim Ref', 'Farmer', 'Crop / Damage', 'Taluk', 'Land (Acres)', 'Agri Officer Amt', 'Tahsildar Amt', 'Workflow Stage', 'Claim Date'],
+            },
+            events: {
+                title: '⛓️ Blockchain Event Log',
+                cols: ['Tx Hash', 'Event Type', 'Linked Batch / Claim', 'Performed By', 'Timestamp'],
+            },
+            users: {
+                title: '👥 Registered Stakeholders',
+                cols: ['Name', 'Role', 'District', 'Taluk', 'Email', 'Mobile', 'Wallet', 'Joined'],
+            },
+        };
+
+        // ─── Status badge helper ─────────────────────────────────────────────────
+        function statusBadge(status) {
+            const map = {
+                pending:         ['badge-amber', '⏳ Pending'],
+                inspecting:      ['badge-blue',  '🔬 Inspecting'],
+                approved:        ['badge-green', '✅ Agri Approved'],
+                rejected:        ['badge-red',   '❌ Rejected'],
+                batch_recorded:  ['badge-blue',  '📦 Batch Recorded'],
+                listed:          ['badge-green', '🛒 Listed'],
+                partially_sold:  ['badge-amber', '⚡ Partial Sale'],
+                sold:            ['badge-purple','🔒 Sold Out'],
+                expired:         ['badge-gray',  '💀 Expired'],
+                processor_approved:  ['badge-blue',   '✅ Agri Approved'],
+                processor_rejected:  ['badge-red',    '❌ Agri Rejected'],
+                processor_review:    ['badge-blue',   '🔬 Field Inspect'],
+                tahsildar_review:    ['badge-purple', '📋 Tahsildar Review'],
+                tahsildar_approved:  ['badge-purple', '✅ Tahsildar OK'],
+                tahsildar_rejected:  ['badge-red',    '❌ Tahsildar Rejected'],
+                dna_review:          ['badge-pink',   '🏛️ IAgS Review'],
+                dna_approved:        ['badge-green',  '✅ IAgS Approved'],
+                disbursed:           ['badge-green',  '💰 Fund Disbursed'],
+            };
+            const [cls, label] = map[status] || ['badge-gray', status || '—'];
+            return `<span class="badge ${cls}">${label}</span>`;
+        }
+
+        function roleBadge(role) {
+            if (!role) return '<span class="badge badge-gray">—</span>';
+            const r = role.toLowerCase();
+            if (r === 'farmer')     return `<span class="badge role-farmer">🌾 Farmer</span>`;
+            if (r === 'processor')  return `<span class="badge role-agri">🔬 Agri Officer</span>`;
+            if (r === 'retailer')   return `<span class="badge role-retailer">🏪 Retailer</span>`;
+            if (r === 'consumer')   return `<span class="badge role-consumer">👤 Consumer</span>`;
+            if (r === 'tahsildar')  return `<span class="badge role-tahsildar">📋 Tahsildar</span>`;
+            if (r === 'regulator')  return `<span class="badge role-iags">🏛️ IAgS / Admin</span>`;
+            return `<span class="badge badge-gray">${role}</span>`;
+        }
+
+        function fmtDate(d) {
+            if (!d) return '—';
+            return new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: '2-digit' });
+        }
+        function fmtCurrency(v) {
+            if (v == null) return '—';
+            return '₹' + Number(v).toLocaleString('en-IN');
+        }
+        function shortHash(h) {
+            if (!h) return '—';
+            return h.length > 16 ? h.substring(0, 10) + '…' + h.slice(-4) : h;
+        }
+
+        // ─── Fetch All Data ──────────────────────────────────────────────────────
+        async function fetchAll() {
+            const bar = document.getElementById('progress');
+            bar.style.width = '40%';
+            try {
+                // Live data from explorer endpoint
+                const res = await fetch(`${API}/api/explorer/live`);
+                const json = await res.json();
+                if (json.status === 'success') {
+                    DATA.events = json.data.events || [];
+                    DATA.users  = json.data.users  || [];
+                    DATA.batches = json.data.batches || [];
+                }
+                bar.style.width = '70%';
+
+                // Harvest applications
+                const hRes = await fetch(`${API}/api/harvest/marketplace`);
+                const hJson = await hRes.json();
+                if (hJson.status === 'success') {
+                    DATA.marketplace = hJson.data || [];
+                }
+
+                bar.style.width = '100%';
+                document.getElementById('status-text').innerText = 'LIVE · ' + new Date().toLocaleTimeString('en-IN');
+                document.getElementById('status-dot').style.background = 'var(--green)';
+                document.getElementById('last-updated').innerText = 'Last sync: ' + new Date().toLocaleTimeString('en-IN');
+
+                // Build harvest + relief from marketplace data
+                DATA.harvest = DATA.marketplace;
+                DATA.relief = [];
+
+                updateStats();
+                renderTable(currentTab);
+
+            } catch (err) {
+                document.getElementById('status-text').innerText = 'OFFLINE — ' + err.message.slice(0, 30);
+                document.getElementById('status-dot').style.background = 'var(--red)';
+            } finally {
+                setTimeout(() => bar.style.width = '0%', 500);
+            }
+        }
+
+        // ─── Stats Updater ───────────────────────────────────────────────────────
+        function updateStats() {
+            const total = DATA.harvest.length;
+            const approved = DATA.harvest.filter(a => ['approved','batch_recorded','listed','partially_sold','sold'].includes(a.status)).length;
+            const onMarket = DATA.harvest.filter(a => ['listed','partially_sold'].includes(a.status)).length;
+            const relief = DATA.relief.length;
+            const iags = (DATA.users || []).filter(u => u.role?.toLowerCase() === 'regulator').length;
+            const events = (DATA.events || []).length;
+
+            document.getElementById('stat-apps').innerText = total;
+            document.getElementById('stat-approved').innerText = approved;
+            document.getElementById('stat-market').innerText = onMarket;
+            document.getElementById('stat-relief').innerText = relief || '—';
+            document.getElementById('stat-iags').innerText = iags || '—';
+            document.getElementById('stat-events').innerText = events;
+
+            document.getElementById('cnt-harvest').innerText = DATA.harvest.length;
+            document.getElementById('cnt-marketplace').innerText = onMarket;
+            document.getElementById('cnt-relief').innerText = DATA.relief.length;
+            document.getElementById('cnt-events').innerText = DATA.events.length;
+            document.getElementById('cnt-users').innerText = (DATA.users || []).length;
+        }
+
+        // ─── Tab Switcher ────────────────────────────────────────────────────────
+        function showTab(type) {
+            currentTab = type;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + type).classList.add('active');
+            document.getElementById('status-filter').style.display = (type === 'harvest') ? '' : 'none';
+            renderTable(type);
+        }
+
+        // ─── Search / Filter ─────────────────────────────────────────────────────
+        function applySearch() { renderTable(currentTab); }
+
+        function filterData(type) {
+            const q = (document.getElementById('search-box').value || '').toLowerCase();
+            const sf = (document.getElementById('status-filter').value || '').toLowerCase();
+            let d = DATA[type] || [];
+
+            if (q) {
+                d = d.filter(item => JSON.stringify(item).toLowerCase().includes(q));
+            }
+            if (sf && type === 'harvest') {
+                d = d.filter(item => (item.status || '').toLowerCase() === sf);
+            }
+            return d;
+        }
+
+        // ─── Render Table ─────────────────────────────────────────────────────────
+        function renderTable(type) {
+            const cfg = TAB_CONFIG[type];
+            document.getElementById('table-title').innerText = cfg.title;
+
+            const head = document.getElementById('table-head');
+            head.innerHTML = `<tr>${cfg.cols.map(c => `<th>${c}</th>`).join('')}</tr>`;
+
+            const data = filterData(type);
+            filteredData = data;
+
+            document.getElementById('record-count').innerText = `${data.length} record${data.length !== 1 ? 's' : ''}`;
+
+            const body = document.getElementById('table-body');
+            body.innerHTML = '';
+
+            if (!data || data.length === 0) {
+                document.getElementById('empty-state').style.display = 'block';
+                return;
+            }
+            document.getElementById('empty-state').style.display = 'none';
+
+            data.forEach(item => {
+                let row = '';
+                if (type === 'harvest') row = rowHarvest(item);
+                else if (type === 'marketplace') row = rowMarketplace(item);
+                else if (type === 'relief') row = rowRelief(item);
+                else if (type === 'events') row = rowEvent(item);
+                else if (type === 'users') row = rowUser(item);
+                body.innerHTML += `<tr>${row}</tr>`;
+            });
+        }
+
+        // ─── Row Renderers ───────────────────────────────────────────────────────
+
+        function rowHarvest(a) {
+            const totalW = a.batchRecordedWeight || a.quantityKg || 0;
+            const sold = a.soldQuantityKg || 0;
+            const pct = totalW > 0 ? Math.round((sold / totalW) * 100) : 0;
+            return `
+                <td class="mono text-green">${a.applicationId || a._id?.toString().slice(-8) || '—'}</td>
+                <td class="text-white">${a.cropType || '—'} ${a.cropVariety ? `<span style="color:#666;font-size:0.75rem">(${a.cropVariety})</span>` : ''}</td>
+                <td>${a.farmerName || '—'}</td>
+                <td>${a.farmerDistrict || '—'}${a.farmerTaluk ? `<br><span style="color:#555;font-size:0.72rem">${a.farmerTaluk}</span>` : ''}</td>
+                <td>${a.quantityKg || '—'}</td>
+                <td class="mono">${fmtCurrency(a.farmerPricePerKg)}</td>
+                <td>${a.processorName ? `<span style="color:#3b82f6;font-size:0.8rem">${a.processorName}</span>` : '<span style="color:#444">Pending</span>'}</td>
+                <td>${a.qualityGrade ? `<span class="badge badge-green">${a.qualityGrade}</span>` : '—'}</td>
+                <td>${statusBadge(a.status)}</td>
+                <td>${a.blockchainVerified ? `<span class="badge badge-green">✅ Verified</span>` : `<span class="badge badge-gray">⏳</span>`}</td>
+                <td style="font-size:0.75rem;color:#666">${fmtDate(a.submittedAt)}</td>
+            `;
+        }
+
+        function rowMarketplace(a) {
+            const totalW = a.batchRecordedWeight || a.quantityKg || 0;
+            const sold = a.soldQuantityKg || 0;
+            const remaining = a.remainingQuantityKg ?? Math.max(0, totalW - sold);
+            const pct = totalW > 0 ? Math.round((sold / totalW) * 100) : 0;
+            const rev = (a.finalPricePerKg || 0) * sold;
+            return `
+                <td class="mono text-green">${a.batchId || '—'}</td>
+                <td class="text-white">${a.cropType || '—'} ${a.organicVerified ? '🌿' : ''}</td>
+                <td>${a.farmerName || '—'}</td>
+                <td>${a.farmerDistrict || '—'}</td>
+                <td>${totalW}</td>
+                <td class="mono text-amber">${sold}</td>
+                <td class="mono text-green">${remaining}</td>
+                <td class="mono" style="color:var(--green);font-weight:700">${fmtCurrency(a.finalPricePerKg)}</td>
+                <td class="mono" style="color:var(--purple)">${fmtCurrency(rev)}</td>
+                <td>${statusBadge(a.status)}</td>
+                <td style="font-size:0.75rem;color:#666">${fmtDate(a.batchRecordedAt)}</td>
+            `;
+        }
+
+        function rowRelief(r) {
+            const wfMap = {
+                pending: 1, processor_review: 2, processor_approved: 3,
+                tahsildar_review: 4, tahsildar_approved: 5, dna_review: 6,
+                dna_approved: 7, disbursed: 8
+            };
+            const step = wfMap[r.status] || 0;
+            return `
+                <td class="mono text-amber">${r.claimRefNo || '—'}</td>
+                <td class="text-white">${r.farmerName || '—'}</td>
+                <td>${r.cropType || '—'}<br><span style="color:#ef4444;font-size:0.72rem">${r.damageReason || ''}</span></td>
+                <td>${r.taluk || r.district || '—'}</td>
+                <td>${r.landAreaAcres || '—'}</td>
+                <td class="mono text-blue">${fmtCurrency(r.estimatedAmount)}</td>
+                <td class="mono text-purple">${fmtCurrency(r.tahsildarApprovedAmount)}</td>
+                <td>${statusBadge(r.status)}</td>
+                <td style="font-size:0.75rem;color:#666">${fmtDate(r.submittedAt)}</td>
+            `;
+        }
+
+        function rowEvent(e) {
+            const stageColors = {
+                HARVEST_APPLICATION: 'badge-green',
+                CROP_INSPECTION: 'badge-blue',
+                BATCH_RECORDED: 'badge-blue',
+                CROP_PURCHASE: 'badge-amber',
+                STOCK_CLOSED: 'badge-purple',
+                RELIEF_APPLICATION: 'badge-amber',
+                AGRI_OFFICER_FIELD_INSPECTION: 'badge-blue',
+                TAHSILDAR_VERIFICATION: 'badge-purple',
+                ADMIN_FUND_DISBURSED: 'badge-green',
+            };
+            const cls = stageColors[e.stage] || 'badge-gray';
+            return `
+                <td class="mono" style="color:#6b7280" title="${e.hash || ''}">${shortHash(e.hash || e.id)}</td>
+                <td><span class="badge ${cls}">${e.stage || '—'}</span></td>
+                <td class="mono text-green">${e.batch || '—'}</td>
+                <td>${e.actor || '—'}</td>
+                <td style="font-size:0.75rem;color:#666">${e.time || fmtDate(e.timestamp)}</td>
+            `;
+        }
+
+        function rowUser(u) {
+            return `
+                <td class="text-white">${u.name || '—'}</td>
+                <td>${roleBadge(u.role)}</td>
+                <td>${u.location || u.district || '—'}</td>
+                <td style="color:#555;font-size:0.75rem">${u.taluk || '—'}</td>
+                <td style="color:#555;font-size:0.75rem">${u.email || '—'}</td>
+                <td style="color:#555;font-size:0.75rem">${u.mobile || '—'}</td>
+                <td class="mono" style="font-size:0.7rem">${u.wallet || '0x...'}</td>
+                <td style="font-size:0.75rem;color:#666">${u.joined || fmtDate(u.createdAt)}</td>
+            `;
+        }
+
+        // ─── Export CSV ──────────────────────────────────────────────────────────
+        function exportCSV() {
+            const cols = TAB_CONFIG[currentTab].cols;
+            const rows = filteredData.map(item => {
+                if (currentTab === 'harvest') {
+                    return [item.applicationId, item.cropType, item.farmerName, item.farmerDistrict, item.quantityKg, item.farmerPricePerKg, item.processorName, item.qualityGrade, item.status, item.blockchainVerified, item.submittedAt].join(',');
+                } else if (currentTab === 'users') {
+                    return [item.name, item.role, item.location || item.district, item.taluk, item.wallet, item.joined].join(',');
+                } else if (currentTab === 'events') {
+                    return [item.hash || item.id, item.stage, item.batch, item.actor, item.time].join(',');
+                }
+                return Object.values(item).join(',');
+            });
+            const csv = [cols.join(','), ...rows].join('\n');
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+            a.download = `agritrace_${currentTab}_${Date.now()}.csv`;
+            a.click();
+        }
+
+        // ─── Auto Refresh ────────────────────────────────────────────────────────
+        let timer = 5;
+        setInterval(() => {
+            timer--;
+            document.getElementById('footer-time').innerText = `Auto-refresh in ${timer}s`;
+            if (timer <= 0) { timer = 5; fetchAll(); }
+        }, 1000);
+
+        // Initial load
+        fetchAll();
+    </script>
+</body>
+
+</html>
