@@ -116,32 +116,61 @@ export default function TracePage({ params }: { params: { batchId: string } }) {
 
     useEffect(() => {
         const fetchData = async () => {
-            const { apiRequest } = await import("@/lib/api");
+            // Helper: map mock event stage names → blockchain action keys
+            const stageToAction = (stage: string) => {
+                if (stage === 'Harvest' || stage === 'Harvested') return 'HARVEST_APPLICATION';
+                if (stage === 'Quality Check' || stage === 'Quality Tested') return 'CROP_INSPECTION';
+                if (stage === 'Processing' || stage === 'Batch Recorded') return 'BATCH_RECORDED';
+                if (stage === 'Transport') return 'BATCH_RECORDED';
+                if (stage === 'Sold' || stage === 'Purchased') return 'CROP_PURCHASE';
+                return 'BATCH_RECORDED';
+            };
+
+            // Helper: build app object from mock data
+            const buildFromMock = (mock: any) => ({
+                cropType: mock.crop,
+                farmerDistrict: mock.district,
+                farmerName: mock.farmer,
+                farmerVillage: mock.village,
+                quantityKg: mock.weight,
+                qualityGrade: mock.grade || 'A+',
+                organicVerified: mock.organic,
+                blockchainEvents: (mock.events || mock.history || []).map((h: any) => ({
+                    action: stageToAction(h.stage),
+                    actor: h.actor,
+                    timestamp: h.timestamp,
+                    details: h.details || (h.notes ? { Notes: h.notes } : {}),
+                    txHash: h.txHash
+                }))
+            });
+
+            // 1. If it's a known demo/mock ID → show mock data immediately (no API needed)
+            const mockEntry = MOCK_BATCHES[batchId as keyof typeof MOCK_BATCHES] as any;
+            if (mockEntry && (batchId.startsWith('TN-DEMO') || batchId.startsWith('MOCK-'))) {
+                setApp(buildFromMock(mockEntry));
+                setLoading(false);
+                return;
+            }
+
+            // 2. Try the real backend API
             try {
+                const { apiRequest } = await import("@/lib/api");
                 const res = await apiRequest(`/harvest/${batchId}`, 'GET');
-                if (res.status === 'success') {
+                if (res.status === 'success' && res.data) {
                     setApp(res.data);
-                } else if (MOCK_BATCHES[batchId as keyof typeof MOCK_BATCHES]) {
-                    const mock = MOCK_BATCHES[batchId as keyof typeof MOCK_BATCHES] as any;
-                    setApp({
-                        cropType: mock.crop,
-                        farmerDistrict: mock.district,
-                        farmerName: mock.farmer,
-                        farmerVillage: mock.village,
-                        blockchainEvents: (mock.history || []).map((h: any) => ({
-                            action: h.stage === 'Harvested' ? 'HARVEST_APPLICATION' : h.stage === 'Quality Tested' ? 'CROP_INSPECTION' : 'BATCH_RECORDED',
-                            actor: h.actor,
-                            timestamp: h.timestamp,
-                            details: { Notes: h.notes },
-                            txHash: h.txHash
-                        }))
-                    });
+                    setLoading(false);
+                    return;
                 }
             } catch (err) {
-                console.error("Failed to fetch trace data:", err);
-            } finally {
-                setLoading(false);
+                console.warn("Backend unreachable, falling back to mock data:", err);
             }
+
+            // 3. Fallback: check mock data for any matching batchId
+            if (mockEntry) {
+                setApp(buildFromMock(mockEntry));
+            }
+            // If nothing found, app stays null → "Batch Not Found" is shown
+            setLoading(false);
         };
         fetchData();
     }, [batchId]);
