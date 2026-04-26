@@ -18,51 +18,76 @@ const User = require('./models/User');
 const app = express();
 
 // ─── Middleware ───
-app.use(helmet()); // Security headers
+app.use(helmet());
 
-// CORS - allow localhost in dev + Vercel production + any Vercel preview URLs
+// CORS - allow localhost in dev + all Vercel deployments
 const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:3001',
-    'https://agri-trace-ai-big-dream.vercel.app',  // production Vercel URL
-    process.env.FRONTEND_URL,                        // from .env for flexibility
+    'https://agri-trace-ai-big-dream.vercel.app',
+    process.env.FRONTEND_URL,
 ].filter(Boolean);
 
 app.use(cors({
     origin: (origin, callback) => {
-        // Allow requests with no origin (mobile apps, curl, Render health checks, Postman)
         if (!origin) return callback(null, true);
-        // Allow any Vercel preview deployment (*.vercel.app)
         if (origin.endsWith('.vercel.app')) return callback(null, true);
-        // Allow explicitly whitelisted origins
         if (allowedOrigins.some(o => origin.startsWith(o))) return callback(null, true);
         callback(new Error(`CORS: origin ${origin} not allowed`));
     },
     credentials: true
 }));
 
-app.use(morgan('dev')); // Logging
-app.use(express.json({ limit: '10mb' })); // Parse JSON bodies (increased for photo uploads)
+app.use(morgan('dev'));
+app.use(express.json({ limit: '10mb' }));
 
 // Rate limiting
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 500 // Increased for dashboard responsiveness
+    windowMs: 15 * 60 * 1000,
+    max: 500
 });
 app.use('/api', limiter);
+
+// ─── Serverless MongoDB Connection Cache ───────────────────────────────────
+// CRITICAL for Vercel: reuse existing connection across warm function invocations
+// Without this, every request would open a new MongoDB connection and leak them.
+let cachedConnection = null;
+
+async function connectDB() {
+    // Already connected — reuse it (warm serverless function)
+    if (cachedConnection && mongoose.connection.readyState === 1) {
+        return cachedConnection;
+    }
+    // First call or cold start — create new connection
+    cachedConnection = await mongoose.connect(process.env.MONGO_URI);
+    console.log('✅ Connected to MongoDB');
+    return cachedConnection;
+}
+
+// Connect before handling any request (non-blocking for serverless)
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (err) {
+        console.error('❌ MongoDB connection failed:', err.message);
+        res.status(503).json({ status: 'error', message: 'Database unavailable. Please try again shortly.' });
+    }
+});
 
 // ─── Routes ───
 app.get('/', (req, res) => {
     res.json({ message: 'AgriTraceTN API is running', version: '1.0.0' });
 });
 
-// Health check endpoint — used by Render to verify the service is alive
+// Health check — works even before DB connects
 app.get('/health', (req, res) => {
-    const dbState = ['disconnected', 'connected', 'connecting', 'disconnecting'];
+    const states = ['disconnected', 'connected', 'connecting', 'disconnecting'];
     res.json({
         status: 'ok',
-        db: dbState[require('mongoose').connection.readyState] || 'unknown',
-        uptime: process.uptime().toFixed(0) + 's'
+        db: states[mongoose.connection.readyState] || 'unknown',
+        uptime: process.uptime().toFixed(0) + 's',
+        env: process.env.NODE_ENV || 'development'
     });
 });
 
@@ -115,29 +140,23 @@ app.use('/api/events', eventRoutes);
 app.use('/api/compensation', require('./routes/compensation'));
 app.use('/api/harvest', require('./routes/harvest'));
 
-// ─── DB Connection ───
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => {
-        console.log('✅ Connected to MongoDB');
-        // Daily Crop Price Sync from data.gov.in
-        MarketPriceService.fetchAndSyncPrices();
-    })
-    .catch(err => {
-        console.error('❌ MongoDB connection error:', err.message);
-        console.log('💡 Tip: Check your MONGO_URI environment variable on Render.');
-        process.exit(1); // Exit so Render can restart the service
-    });
-
 // ─── Error Handling ───
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ status: 'error', message: err.message || 'Something went wrong!' });
 });
 
-const PORT = process.env.PORT || 5000;
-const HOST = '0.0.0.0'; // Bind to all interfaces for LAN access
-app.listen(PORT, HOST, () => {
-    console.log(`🚀 Server is running on port ${PORT} in ${process.env.NODE_ENV} mode`);
-    console.log(`🔗 Local:   http://localhost:${PORT}`);
-    console.log(`🔗 Network: http://${process.env.HOST_IP || '10.117.145.160'}:${PORT}`);
-});
+// ─── Start Server (only when running locally, NOT on Vercel) ─────────────────
+// Vercel manages the server lifecycle — module.exports = app is what Vercel uses.
+// When running locally with `node server.js` or `nodemon`, the listen() runs.
+if (process.env.VERCEL !== '1') {
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, '0.0.0.0', () => {
+        // Sync prices once on startup (only in persistent server mode)
+        connectDB().then(() => MarketPriceService.fetchAndSyncPrices());
+        console.log(`🚀 Server running on http://localhost:${PORT}`);
+    });
+}
+
+// ─── Export for Vercel Serverless ─────────────────────────────────────────────
+module.exports = app;
