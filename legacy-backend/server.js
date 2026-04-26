@@ -20,16 +20,21 @@ const app = express();
 // ─── Middleware ───
 app.use(helmet()); // Security headers
 
-// CORS - allow localhost in dev, production frontend URL in prod
+// CORS - allow localhost in dev + Vercel production + any Vercel preview URLs
 const allowedOrigins = [
     'http://localhost:3000',
-    process.env.FRONTEND_URL,
+    'http://localhost:3001',
+    'https://agri-trace-ai-big-dream.vercel.app',  // production Vercel URL
+    process.env.FRONTEND_URL,                        // from .env for flexibility
 ].filter(Boolean);
 
 app.use(cors({
     origin: (origin, callback) => {
-        // Allow requests with no origin (mobile apps, curl, Render health checks)
+        // Allow requests with no origin (mobile apps, curl, Render health checks, Postman)
         if (!origin) return callback(null, true);
+        // Allow any Vercel preview deployment (*.vercel.app)
+        if (origin.endsWith('.vercel.app')) return callback(null, true);
+        // Allow explicitly whitelisted origins
         if (allowedOrigins.some(o => origin.startsWith(o))) return callback(null, true);
         callback(new Error(`CORS: origin ${origin} not allowed`));
     },
@@ -51,6 +56,16 @@ app.get('/', (req, res) => {
     res.json({ message: 'AgriTraceTN API is running', version: '1.0.0' });
 });
 
+// Health check endpoint — used by Render to verify the service is alive
+app.get('/health', (req, res) => {
+    const dbState = ['disconnected', 'connected', 'connecting', 'disconnecting'];
+    res.json({
+        status: 'ok',
+        db: dbState[require('mongoose').connection.readyState] || 'unknown',
+        uptime: process.uptime().toFixed(0) + 's'
+    });
+});
+
 // Explorer (Public Live View)
 app.get('/api/explorer/live', async (req, res) => {
     try {
@@ -67,8 +82,8 @@ app.get('/api/explorer/live', async (req, res) => {
                     farmer: b.farmerName || 'Unknown',
                     district: b.district || 'TN',
                     weight: b.weightKg + 'kg',
-                    mfgPrice: '₹' + (Math.random() * 20 + 20).toFixed(0),
-                    sellPrice: '₹' + (Math.random() * 50 + 50).toFixed(0),
+                    mfgPrice: '₹' + Math.max(20, Math.round(b.weightKg * 0.05) + 18),
+                    sellPrice: '₹' + Math.max(50, Math.round(b.weightKg * 0.12) + 45),
                     status: b.currentStage,
                     verified: b.blockchainVerified
                 })),
@@ -109,7 +124,8 @@ mongoose.connect(process.env.MONGO_URI)
     })
     .catch(err => {
         console.error('❌ MongoDB connection error:', err.message);
-        console.log('💡 Tip: Make sure MongoDB is installed and running locally on port 27017');
+        console.log('💡 Tip: Check your MONGO_URI environment variable on Render.');
+        process.exit(1); // Exit so Render can restart the service
     });
 
 // ─── Error Handling ───

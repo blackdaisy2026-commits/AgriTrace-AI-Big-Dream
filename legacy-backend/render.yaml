@@ -1,0 +1,30 @@
+# Render.com Deployment Config for AgriTrace AI Backend
+# This file tells Render how to build and run the backend.
+# Docs: https://render.com/docs/render-yaml-spec
+
+services:
+  - type: web
+    name: agritrace-backend
+    runtime: node
+    rootDir: legacy-backend
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      # Set these in Render Dashboard → Environment:
+      - key: MONGO_URI
+        sync: false          # ← You MUST set this manually in Render Dashboard
+      - key: JWT_SECRET
+        sync: false          # ← You MUST set this manually in Render Dashboard
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: BLOCKCHAIN_MODE
+        value: simulate
+      - key: FRONTEND_URL
+        value: https://agri-trace-ai-big-dream.vercel.app
+      - key: DATAGOV_API_KEY
+        sync: false          # ← Set this manually in Render Dashboard
