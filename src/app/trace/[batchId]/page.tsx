@@ -9,7 +9,7 @@ import {
     ExternalLink, Hash, ChevronDown, ChevronUp, Package,
     User, TrendingUp, Check, X, AlertCircle
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { QRCodeSVG as QRCode } from "qrcode.react";
 
 const STAGE_CONFIG: Record<string, { icon: string; label: string; labelTamil: string; color: string; gradient: string }> = {
@@ -108,8 +108,11 @@ function EventCard({ event, index, total }: { event: any; index: number; total: 
     );
 }
 
-export default function TracePage({ params }: { params: { batchId: string } }) {
-    const batchId = params.batchId;
+export default function TracePage({ params }: { params: Promise<{ batchId: string }> | { batchId: string } }) {
+    // React.use() unwraps the Promise in Next.js 15 client components
+    // Fallback to direct access for older Next.js versions
+    const resolvedParams = typeof (params as any).then === 'function' ? use(params as Promise<{ batchId: string }>) : params as { batchId: string };
+    const batchId = resolvedParams.batchId;
     const [app, setApp] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : '');
