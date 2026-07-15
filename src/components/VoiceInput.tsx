@@ -48,7 +48,7 @@ export default function VoiceInput({ onTranscript, placeholder = "Tap mic and sp
 
         recognition.onerror = (event: any) => {
             if (event.error === "no-speech") {
-                toast("No speech detected. Try again.", { icon: "??" });
+                toast("No speech detected. Try again.", { icon: "🎤" });
             } else if (event.error === "not-allowed") {
                 toast.error("Microphone permission denied");
             }
@@ -59,7 +59,7 @@ export default function VoiceInput({ onTranscript, placeholder = "Tap mic and sp
 
         recognitionRef.current = recognition;
         recognition.start();
-        toast("?? Listening... Speak now", { duration: 2000 });
+        toast("🎤 Listening... Speak now", { duration: 2000 });
     };
 
     const stopListening = () => {
@@ -91,9 +91,9 @@ export default function VoiceInput({ onTranscript, placeholder = "Tap mic and sp
                         }`}
                 >
                     {listening ? (
-                        <><MicOff className="w-4 h-4" /> Stop (????????)</>
+                        <><MicOff className="w-4 h-4" /> Stop (நிறுத்து)</>
                     ) : (
-                        <><Mic className="w-4 h-4" /> Speak Tamil (??????? ????)</>
+                        <><Mic className="w-4 h-4" /> Speak Tamil (தமிழில் பேசு)</>
                     )}
                 </button>
 
@@ -117,7 +117,7 @@ export default function VoiceInput({ onTranscript, placeholder = "Tap mic and sp
 
             {transcript && (
                 <div className="p-2.5 rounded-lg bg-green-900/10 border border-green-500/20 text-sm text-green-300">
-                    ?? {transcript}
+                    🎤 {transcript}
                 </div>
             )}
 

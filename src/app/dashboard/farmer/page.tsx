@@ -205,16 +205,16 @@ export default function FarmerDashboard() {
     const handleVoice = (text: string) => {
         const lower = text.toLowerCase();
         const cropMap: Record<string, string> = {
-            "tomato": "Tomato", "???????": "Tomato",
-            "banana": "Banana", "????": "Banana",
-            "rice": "Rice", "?????": "Rice",
-            "mango": "Mango", "????????": "Mango",
-            "onion": "Onion", "?????????": "Onion",
-            "chilli": "Chili Red", "???????": "Chili Red",
-            "coconut": "Coconut", "??????": "Coconut",
-            "sugarcane": "Sugarcane", "???????": "Sugarcane",
-            "turmeric": "Turmeric", "??????": "Turmeric",
-            "groundnut": "Groundnut", "?????????": "Groundnut",
+            "tomato": "Tomato", "தக்காளி": "Tomato",
+            "banana": "Banana", "வாழை": "Banana",
+            "rice": "Rice", "அரிசி": "Rice",
+            "mango": "Mango", "மாம்பழம்": "Mango",
+            "onion": "Onion", "வெங்காயம்": "Onion",
+            "chilli": "Chili Red", "மிளகாய்": "Chili Red",
+            "coconut": "Coconut", "தென்னை": "Coconut",
+            "sugarcane": "Sugarcane", "கரும்பு": "Sugarcane",
+            "turmeric": "Turmeric", "மஞ்சள்": "Turmeric",
+            "groundnut": "Groundnut", "நிலக்கடலை": "Groundnut",
         };
         for (const [kw, val] of Object.entries(cropMap)) {
             if (lower.includes(kw)) {
@@ -227,23 +227,23 @@ export default function FarmerDashboard() {
             setHarvestForm(f => ({ ...f, district: district.value, taluk: "" }));
             toast.success(`District: ${district.label}`);
         }
-        const weightMatch = lower.match(/(\d+)\s*(kg|????|??????|ton|???|quintal|??????????|bundle|?????|bag|??????|liter|???????)/i);
+        const weightMatch = lower.match(/(\d+)\s*(kg|கிலோ|கிராம்|ton|டன்|quintal|குவிண்டால்|bundle|கட்டு|bag|மூட்டை|liter|லிட்டர்)/i);
         if (weightMatch) {
             const num = weightMatch[1];
             const unitText = weightMatch[2].toLowerCase();
             let unit = "kg";
-            if (unitText.includes("ton") || unitText.includes("???")) unit = "ton";
-            else if (unitText.includes("quintal") || unitText.includes("??????????")) unit = "quintal";
-            else if (unitText.includes("bundle") || unitText.includes("?????")) unit = "bundle";
-            else if (unitText.includes("bag") || unitText.includes("??????")) unit = "bag";
-            else if (unitText.includes("liter") || unitText.includes("???????")) unit = "liter";
+            if (unitText.includes("ton") || unitText.includes("டன்")) unit = "ton";
+            else if (unitText.includes("quintal") || unitText.includes("குவிண்டால்")) unit = "quintal";
+            else if (unitText.includes("bundle") || unitText.includes("கட்டு")) unit = "bundle";
+            else if (unitText.includes("bag") || unitText.includes("மூட்டை")) unit = "bag";
+            else if (unitText.includes("liter") || unitText.includes("லிட்டர்")) unit = "liter";
             setHarvestForm(f => ({ ...f, quantity: num, unit }));
             toast.success(`Weight: ${num} ${unit}`);
         }
-        const priceMatch = lower.match(/(\d+)\s*(rupee|??????|per|????)/);
+        const priceMatch = lower.match(/(\d+)\s*(rupee|ரூபாய்|per|விலை)/);
         if (priceMatch) {
             setHarvestForm(f => ({ ...f, farmerPrice: priceMatch[1] }));
-            toast.success(`Price: ?${priceMatch[1]}`);
+            toast.success(`Price: ₹${priceMatch[1]}`);
         }
         setHarvestForm(f => ({ ...f, notes: (f.notes + " " + text).trim() }));
     };
@@ -260,7 +260,7 @@ export default function FarmerDashboard() {
 
         const pricePerKg = Number(harvestForm.farmerPrice) / multiplier;
         if (marketRange && (pricePerKg < marketRange.min || pricePerKg > marketRange.max)) {
-            toast.error(`Price out of market range: ?${marketRange.min} � ?${marketRange.max}/kg`);
+            toast.error(`Price out of market range: ₹${marketRange.min} - ₹${marketRange.max}/kg`);
             return;
         }
 
@@ -344,10 +344,10 @@ export default function FarmerDashboard() {
                 >
                     <div>
                         <p className="text-[12px] text-green-400 font-semibold uppercase tracking-widest mb-1">
-                            Farmer Dashboard � ??????? ?????????
+                            Farmer Dashboard · விவசாயி பணிப்பலகை
                         </p>
                         <h1 className="text-2xl font-bold text-slate-900 font-outfit">
-                            Welcome back, {user?.name?.split(" ")[0]} ??
+                            Welcome back, {user?.name?.split(" ")[0]} 👋
                         </h1>
                         <p className="text-[13px] text-[#64748b] mt-0.5">
                             {user?.district}, {user?.taluk}
@@ -498,14 +498,14 @@ export default function FarmerDashboard() {
                                             Voice Input (Tamil / English)
                                         </label>
                                         <p className="text-[11px] text-[#64748b] mb-3">
-                                            Say crop name, quantity, and price in Tamil or English. E.g. "??????? 500 ???? 40 ??????"
+                                            Say crop name, quantity, and price in Tamil or English. E.g. "தக்காளி 500 கிலோ 40 ரூபாய்"
                                         </p>
                                         <VoiceInput onTranscript={handleVoice} />
                                     </div>
 
                                     <div className="grid md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="form-label">Crop Type / ????? ??? <span className="text-red-400">*</span></label>
+                                            <label className="form-label">Crop Type / பயிர் வகை <span className="text-red-400">*</span></label>
                                             <select
                                                 value={harvestForm.cropType}
                                                 onChange={e => setHarvestForm(f => ({ ...f, cropType: e.target.value }))}
@@ -516,7 +516,7 @@ export default function FarmerDashboard() {
                                             </select>
                                         </div>
                                         <div>
-                                            <label className="form-label">Variety / ????</label>
+                                            <label className="form-label">Variety / ரகம்</label>
                                             <input
                                                 value={harvestForm.cropVariety}
                                                 onChange={e => setHarvestForm(f => ({ ...f, cropVariety: e.target.value }))}
@@ -525,22 +525,22 @@ export default function FarmerDashboard() {
                                             />
                                         </div>
                                         <div>
-                                            <label className="form-label">Unit / ???? <span className="text-red-400">*</span></label>
+                                            <label className="form-label">Unit / அலகு <span className="text-red-400">*</span></label>
                                             <select
                                                 value={harvestForm.unit}
                                                 onChange={e => setHarvestForm(f => ({ ...f, unit: e.target.value }))}
                                                 className="agri-select"
                                             >
-                                                <option value="kg">kg (????)</option>
-                                                <option value="ton">Ton (???)</option>
-                                                <option value="quintal">Quintal (??????????)</option>
-                                                <option value="bundle">Bundle (?????)</option>
-                                                <option value="bag">Bag (??????)</option>
-                                                <option value="liter">Liter (???????)</option>
+                                                <option value="kg">kg (கிலோ)</option>
+                                                <option value="ton">Ton (டன்)</option>
+                                                <option value="quintal">Quintal (குவிண்டால்)</option>
+                                                <option value="bundle">Bundle (கட்டு)</option>
+                                                <option value="bag">Bag (மூட்டை)</option>
+                                                <option value="liter">Liter (லிட்டர்)</option>
                                             </select>
                                         </div>
                                         <div>
-                                            <label className="form-label">Quantity ({harvestForm.unit}) / ???? <span className="text-red-400">*</span></label>
+                                            <label className="form-label">Quantity ({harvestForm.unit}) / அளவு <span className="text-red-400">*</span></label>
                                             <input
                                                 type="number"
                                                 value={harvestForm.quantity}
@@ -550,7 +550,7 @@ export default function FarmerDashboard() {
                                             />
                                         </div>
                                         <div>
-                                            <label className="form-label">Harvest Date / ?????? ???? <span className="text-red-400">*</span></label>
+                                            <label className="form-label">Harvest Date / அறுவடை நாள் <span className="text-red-400">*</span></label>
                                             <div className="relative">
                                                 <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748b] pointer-events-none" />
                                                 <input
@@ -613,18 +613,18 @@ export default function FarmerDashboard() {
                                                 <p className="text-[13px] text-slate-900">
                                                     Range:{" "}
                                                     <span className="font-bold text-blue-400">
-                                                        ?{marketRange.min} � ?{marketRange.max}
+                                                        ₹{marketRange.min} - ₹{marketRange.max}
                                                     </span>{" "}
                                                     per kg
                                                 </p>
                                                 <p className="text-[11px] text-[#64748b] mt-0.5">
-                                                    {marketRange.commodity} � {harvestForm.district || "Tamil Nadu"}
+                                                    {marketRange.commodity} - {harvestForm.district || "Tamil Nadu"}
                                                 </p>
                                             </motion.div>
                                         ) : harvestForm.cropType ? (
                                             <div className="p-3 rounded-xl bg-blue-500/4 border border-blue-500/12 flex items-center gap-2">
                                                 <Loader2 className="w-3.5 h-3.5 text-blue-400 animate-spin" />
-                                                <span className="text-[12px] text-blue-400">Fetching live market data�</span>
+                                                <span className="text-[12px] text-blue-400">Fetching live market data...</span>
                                             </div>
                                         ) : (
                                             <p className="text-[11px] text-[#64748b] italic">
@@ -636,7 +636,7 @@ export default function FarmerDashboard() {
                                             <div className="flex items-center justify-between mt-3 pt-3 border-t border-green-500/10">
                                                 <span className="text-[12px] text-[#64748b]">Total Projected Value</span>
                                                 <span className="text-[16px] font-bold text-green-400">
-                                                    ?{(Number(harvestForm.farmerPrice) * Number(harvestForm.quantity)).toLocaleString("en-IN")}
+                                                    ₹{(Number(harvestForm.farmerPrice) * Number(harvestForm.quantity)).toLocaleString("en-IN")}
                                                 </span>
                                             </div>
                                         )}
@@ -645,32 +645,32 @@ export default function FarmerDashboard() {
                                     {/* Location */}
                                     <div className="grid md:grid-cols-3 gap-4">
                                         <div>
-                                            <label className="form-label">District / ????????</label>
+                                            <label className="form-label">District / மாவட்டம்</label>
                                             <select
                                                 value={harvestForm.district}
                                                 onChange={e => setHarvestForm(f => ({ ...f, district: e.target.value, taluk: "" }))}
                                                 className="agri-select"
                                             >
-                                                <option value="">Select district�</option>
+                                                <option value="">Select district...</option>
                                                 {TN_DISTRICTS.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
                                             </select>
                                         </div>
                                         <div>
-                                            <label className="form-label">Taluk / ????????</label>
+                                            <label className="form-label">Taluk / தாலுக்கா</label>
                                             <select
                                                 value={harvestForm.taluk}
                                                 onChange={e => setHarvestForm(f => ({ ...f, taluk: e.target.value }))}
                                                 className="agri-select"
                                                 disabled={!harvestForm.district}
                                             >
-                                                <option value="">Select taluk�</option>
+                                                <option value="">Select taluk...</option>
                                                 {harvestForm.district && TN_TALUKS[harvestForm.district]?.map(t => (
                                                     <option key={t.value} value={t.value}>{t.label}</option>
                                                 ))}
                                             </select>
                                         </div>
                                         <div>
-                                            <label className="form-label">Village / ???????</label>
+                                            <label className="form-label">Village / கிராமம்</label>
                                             <input
                                                 value={harvestForm.village}
                                                 onChange={e => setHarvestForm(f => ({ ...f, village: e.target.value }))}
@@ -709,7 +709,7 @@ export default function FarmerDashboard() {
                                                 onChange={e => setHarvestForm(f => ({ ...f, isOrganic: e.target.checked }))}
                                                 className="w-4 h-4 accent-green-500 rounded"
                                             />
-                                            <span className="text-[13px] text-[#475569]">?? Organic</span>
+                                            <span className="text-[13px] text-[#475569]">🌿 Organic</span>
                                         </label>
                                         <label className="flex items-center gap-2 cursor-pointer">
                                             <input
@@ -718,13 +718,13 @@ export default function FarmerDashboard() {
                                                 onChange={e => setHarvestForm(f => ({ ...f, isFairTrade: e.target.checked }))}
                                                 className="w-4 h-4 accent-amber-500 rounded"
                                             />
-                                            <span className="text-[13px] text-[#475569]">? Fair Trade</span>
+                                            <span className="text-[13px] text-[#475569]">⭐ Fair Trade</span>
                                         </label>
                                     </div>
 
                                     {/* Notes */}
                                     <div>
-                                        <label className="form-label">Notes / ???????????</label>
+                                        <label className="form-label">Notes / குறிப்புகள்</label>
                                         <textarea
                                             value={harvestForm.notes}
                                             onChange={e => setHarvestForm(f => ({ ...f, notes: e.target.value }))}

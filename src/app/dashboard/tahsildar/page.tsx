@@ -103,7 +103,7 @@ export default function TahsildarDashboard() {
         const n = parseFloat(val);
         const base = selectedClaim?.estimatedAmount || 0;
         if (n < base) {
-            setAmountError(`? Amount cannot be less than ?${base.toLocaleString('en-IN')} (Agri Officer's quote). You can only INCREASE.`);
+            setAmountError(`❌ Amount cannot be less than ₹${base.toLocaleString('en-IN')} (Agri Officer's quote). You can only INCREASE.`);
         } else {
             setAmountError("");
         }
@@ -118,7 +118,7 @@ export default function TahsildarDashboard() {
         const amt = revisedAmount ? parseFloat(revisedAmount) : base;
 
         if (amt < base) {
-            toast.error(`? Cannot decrease amount. Enter ?${base.toLocaleString('en-IN')} or higher.`);
+            toast.error(`❌ Cannot decrease amount. Enter ₹${base.toLocaleString('en-IN')} or higher.`);
             return;
         }
 
@@ -145,7 +145,7 @@ export default function TahsildarDashboard() {
                 <Header />
                 <div className="flex-1 flex items-center justify-center">
                     <div className="card p-8 text-center">
-                        <div className="text-4xl mb-4">??</div>
+                        <div className="text-4xl mb-4">🔒</div>
                         <h2 className="text-xl font-bold text-slate-900 mb-2">Tahsildar Access Required</h2>
                         <Link href="/login?role=tahsildar">
                             <button className="btn btn-primary text-white mt-4 px-6 py-2 rounded-xl">Login as Tahsildar</button>
@@ -160,17 +160,17 @@ export default function TahsildarDashboard() {
     const decided = claims.filter(c => ['tahsildar_approved', 'tahsildar_rejected', 'dna_review', 'dna_approved'].includes(c.status));
 
     return (
-        <div className="min-h-screen min-h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col">
             <Header />
             <div className="max-w-7xl mx-auto w-full px-4 py-8 space-y-5">
 
                 {/* Header Card */}
                 <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="card p-6 border-purple-500/20">
                     <div className="flex flex-wrap items-center gap-4">
-                        <div className="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-3xl">??</div>
+                        <div className="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-3xl">📋</div>
                         <div>
                             <h1 className="text-2xl font-black text-slate-900">Tahsildar Dashboard</h1>
-                            <p className="text-purple-400 text-sm">{user?.name} � {user?.district} District � Relief Fund Verification Officer</p>
+                            <p className="text-purple-400 text-sm">{user?.name} · {user?.district} District · Relief Fund Verification Officer</p>
                         </div>
                         <div className="ml-auto flex gap-6">
                             {[
@@ -223,7 +223,7 @@ export default function TahsildarDashboard() {
                         ) : (activeTab === 'pending' ? pending : decided).length === 0 ? (
                             <div className="card p-10 text-center text-[#64748b]">
                                 <ClipboardCheck className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                                <p>{activeTab === 'pending' ? 'No pending claims. All caught up! ?' : 'No decisions made yet.'}</p>
+                                <p>{activeTab === 'pending' ? 'No pending claims. All caught up! ✅' : 'No decisions made yet.'}</p>
                             </div>
                         ) : (
                             (activeTab === 'pending' ? pending : decided).map((c) => (
@@ -235,7 +235,7 @@ export default function TahsildarDashboard() {
                                     className={`card p-4 cursor-pointer transition-all hover:border-purple-500/40 ${selectedClaim?._id === c._id ? 'border-purple-500/60 bg-purple-500/5' : 'border-[#e2e8f0]'}`}
                                 >
                                     <div className="flex items-start gap-3">
-                                        <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-xl flex-shrink-0">??</div>
+                                        <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-xl flex-shrink-0">🌾</div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2 flex-wrap mb-1">
                                                 <span className="font-bold text-slate-900">{c.farmerName}</span>
@@ -248,15 +248,15 @@ export default function TahsildarDashboard() {
                                                 <MapPin className="w-3 h-3" /> {c.village}, {c.taluk}
                                             </div>
                                             <div className="flex items-center gap-3 mt-2 flex-wrap">
-                                                <span className="text-xs text-blue-400">?? {c.cropType} � {c.damageReason}</span>
+                                                <span className="text-xs text-blue-400">🌿 {c.cropType} · {c.damageReason}</span>
                                                 {c.estimatedAmount && (
                                                     <span className="text-xs font-bold text-green-400">
-                                                        Agri Officer: ?{c.estimatedAmount?.toLocaleString('en-IN')}
+                                                        Agri Officer: ₹{c.estimatedAmount?.toLocaleString('en-IN')}
                                                     </span>
                                                 )}
                                                 {c.tahsildarApprovedAmount && c.tahsildarApprovedAmount !== c.estimatedAmount && (
                                                     <span className="text-xs font-bold text-purple-400">
-                                                        You: ?{c.tahsildarApprovedAmount?.toLocaleString('en-IN')}
+                                                        You: ₹{c.tahsildarApprovedAmount?.toLocaleString('en-IN')}
                                                     </span>
                                                 )}
                                             </div>
@@ -313,21 +313,21 @@ export default function TahsildarDashboard() {
                                             { label: "Village", value: selectedClaim.village },
                                             { label: "Taluk / District", value: `${selectedClaim.taluk}, ${selectedClaim.district}` },
                                             { label: "Land (Acres)", value: selectedClaim.landAreaAcres },
-                                            { label: "Crop / Season", value: `${selectedClaim.cropType} � ${selectedClaim.cropSeason || '�'}` },
+                                            { label: "Crop / Season", value: `${selectedClaim.cropType} · ${selectedClaim.cropSeason || '—'}` },
                                         ].map((item, i) => (
                                             <div key={i} className="bg-[#ffffff] p-2 rounded-lg">
                                                 <div className="text-[9px] text-[#64748b] uppercase">{item.label}</div>
-                                                <div className="text-slate-900 text-xs font-medium truncate">{item.value || '�'}</div>
+                                                <div className="text-slate-900 text-xs font-medium truncate">{item.value || '—'}</div>
                                             </div>
                                         ))}
                                     </div>
                                     <div className="mt-2 p-2 rounded-lg bg-red-500/5 border border-red-500/10 text-xs">
                                         <span className="text-red-400 font-bold">Damage: </span>
-                                        <span className="text-slate-600">{selectedClaim.damageReason} � {selectedClaim.damageDescription}</span>
+                                        <span className="text-slate-600">{selectedClaim.damageReason} — {selectedClaim.damageDescription}</span>
                                     </div>
                                     {selectedClaim.photoUrls?.length > 0 && (
                                         <div className="mt-2">
-                                            <div className="text-[10px] text-[#64748b] mb-1">?? Geo-tagged Photos ({selectedClaim.photoUrls.length})</div>
+                                            <div className="text-[10px] text-[#64748b] mb-1">📍 Geo-tagged Photos ({selectedClaim.photoUrls.length})</div>
                                             <div className="flex flex-wrap gap-2">
                                                 {selectedClaim.photoUrls.slice(0, 4).map((url: string, i: number) => (
                                                     <img key={i} src={url} alt={`Photo ${i + 1}`}
@@ -346,15 +346,15 @@ export default function TahsildarDashboard() {
                                     <div className="grid grid-cols-2 gap-2 text-xs mb-3">
                                         {[
                                             { label: "Agri Officer", value: selectedClaim.processorName },
-                                            { label: "Inspection Date", value: selectedClaim.inspectionDate ? new Date(selectedClaim.inspectionDate).toLocaleDateString('en-IN') : '�' },
+                                            { label: "Inspection Date", value: selectedClaim.inspectionDate ? new Date(selectedClaim.inspectionDate).toLocaleDateString('en-IN') : '—' },
                                             { label: "Total Land (Acres)", value: selectedClaim.totalLandInspectedAcres },
                                             { label: "Damaged (Acres)", value: selectedClaim.damagedLandAcres },
-                                            { label: "Damage %", value: selectedClaim.damageLevelPercent ? `${selectedClaim.damageLevelPercent}%` : '�' },
+                                            { label: "Damage %", value: selectedClaim.damageLevelPercent ? `${selectedClaim.damageLevelPercent}%` : '—' },
                                             { label: "Damage Grade", value: selectedClaim.cropDamageGrade },
                                         ].map((item, i) => (
                                             <div key={i} className="bg-[#ffffff] p-2 rounded-lg">
                                                 <div className="text-[9px] text-[#64748b] uppercase">{item.label}</div>
-                                                <div className="text-slate-900 text-xs font-medium">{item.value || '�'}</div>
+                                                <div className="text-slate-900 text-xs font-medium">{item.value || '—'}</div>
                                             </div>
                                         ))}
                                     </div>
@@ -367,19 +367,19 @@ export default function TahsildarDashboard() {
                                     <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-between">
                                         <div>
                                             <div className="text-[10px] text-[#475569] uppercase font-bold">Agri Officer Quoted Relief</div>
-                                            <div className="text-3xl font-black text-blue-400">?{selectedClaim.estimatedAmount?.toLocaleString('en-IN') || '�'}</div>
+                                            <div className="text-3xl font-black text-blue-400">₹{selectedClaim.estimatedAmount?.toLocaleString('en-IN') || '—'}</div>
                                         </div>
                                         <ArrowRight className="w-6 h-6 text-[#64748b]" />
                                         <div className="text-right">
                                             <div className="text-[10px] text-[#475569] uppercase font-bold">Your Decision Amount</div>
                                             <div className="text-3xl font-black text-purple-400">
-                                                ?{(revisedAmount ? parseFloat(revisedAmount) : selectedClaim.tahsildarApprovedAmount || selectedClaim.estimatedAmount)?.toLocaleString('en-IN') || '�'}
+                                                ₹{(revisedAmount ? parseFloat(revisedAmount) : selectedClaim.tahsildarApprovedAmount || selectedClaim.estimatedAmount)?.toLocaleString('en-IN') || '—'}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* -- Decision Panel � only for pending claims -- */}
+                                {/* -- Decision Panel — only for pending claims -- */}
                                 {['processor_approved', 'tahsildar_review'].includes(selectedClaim.status) && (
                                     <div className="card p-5 border-amber-500/10">
                                         <h3 className="font-bold text-amber-400 mb-4 flex items-center gap-2 text-sm">
@@ -387,40 +387,38 @@ export default function TahsildarDashboard() {
                                         </h3>
 
                                         {/* Amount Input with increase-only hint */}
-                                        <div className="mb-4">
-                                            <label className="flex items-center gap-2 text-sm text-slate-600 mb-1 font-medium">
-                                                <TrendingUp className="w-4 h-4 text-green-400" />
-                                                Revised Amount (?) � <span className="text-green-400 font-bold">Increase only, or leave blank</span>
-                                            </label>
-                                            <div className="relative">
-                                                <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 text-green-300 z-20" />
-                                                <input
-                                                    type="number"
-                                                    value={revisedAmount}
-                                                    onChange={e => handleAmountChange(e.target.value)}
-                                                    placeholder={selectedClaim.estimatedAmount?.toString()}
-                                                    min={selectedClaim.estimatedAmount}
-                                                    className={`agri-input !pl-24 ${amountError ? 'border-red-500/50' : ''}`}
-                                                />
-                                            </div>
-                                            {amountError ? (
-                                                <p className="text-xs text-red-400 mt-1 flex items-center gap-1">
-                                                    <AlertCircle className="w-3 h-3" /> {amountError}
-                                                </p>
-                                            ) : (
-                                                <p className="text-[11px] text-[#64748b] mt-1">
-                                                    Min: ?{selectedClaim.estimatedAmount?.toLocaleString('en-IN')} (Agri Officer's quote). Leave blank to confirm as-is.
-                                                </p>
-                                            )}
-                                            {revisedAmount && parseFloat(revisedAmount) > (selectedClaim.estimatedAmount || 0) && !amountError && (
-                                                <p className="text-xs text-green-400 mt-1">
-                                                    ? Increase of ?{(parseFloat(revisedAmount) - selectedClaim.estimatedAmount).toLocaleString('en-IN')} applied.
-                                                </p>
-                                            )}
+                                        <label className="flex items-center gap-2 text-sm text-slate-600 mb-1 font-medium">
+                                            <TrendingUp className="w-4 h-4 text-green-400" />
+                                            Revised Amount (₹) — <span className="text-green-400 font-bold">Increase only, or leave blank</span>
+                                        </label>
+                                        <div className="relative">
+                                            <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 text-green-300 z-20" />
+                                            <input
+                                                type="number"
+                                                value={revisedAmount}
+                                                onChange={e => handleAmountChange(e.target.value)}
+                                                placeholder={selectedClaim.estimatedAmount?.toString()}
+                                                min={selectedClaim.estimatedAmount}
+                                                className={`agri-input !pl-24 ${amountError ? 'border-red-500/50' : ''}`}
+                                            />
                                         </div>
+                                        {amountError ? (
+                                            <p className="text-xs text-red-400 mt-1 flex items-center gap-1">
+                                                <AlertCircle className="w-3 h-3" /> {amountError}
+                                            </p>
+                                        ) : (
+                                            <p className="text-[11px] text-[#64748b] mt-1">
+                                                Min: ₹{selectedClaim.estimatedAmount?.toLocaleString('en-IN')} (Agri Officer's quote). Leave blank to confirm as-is.
+                                            </p>
+                                        )}
+                                        {revisedAmount && parseFloat(revisedAmount) > (selectedClaim.estimatedAmount || 0) && !amountError && (
+                                            <p className="text-xs text-green-400 mt-1">
+                                                ✅ Increase of ₹{(parseFloat(revisedAmount) - selectedClaim.estimatedAmount).toLocaleString('en-IN')} applied.
+                                            </p>
+                                        )}
 
                                         {/* Notes */}
-                                        <div className="mb-4">
+                                        <div className="mt-4 mb-4">
                                             <label className="block text-sm text-slate-600 mb-1 font-medium">
                                                 Verification Notes <span className="text-red-400">*</span>
                                             </label>
@@ -452,16 +450,15 @@ export default function TahsildarDashboard() {
                                         <AnimatePresence>
                                             {decision && (
                                                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-                                                    {/* Summary before submit */}
                                                     <div className={`p-3 rounded-xl mb-3 text-sm border ${decision === 'approve' ? 'bg-green-500/5 border-green-500/20' : 'bg-red-500/5 border-red-500/20'}`}>
                                                         <div className="font-bold text-slate-900 mb-1">
-                                                            {decision === 'approve' ? '? Confirm Approval' : '? Confirm Rejection'}
+                                                            {decision === 'approve' ? '✅ Confirm Approval' : '❌ Confirm Rejection'}
                                                         </div>
                                                         {decision === 'approve' && (
                                                             <div className="text-xs text-[#475569] space-y-1">
-                                                                <div>Agri Officer Amount: <span className="text-blue-400">?{selectedClaim.estimatedAmount?.toLocaleString('en-IN')}</span></div>
-                                                                <div>Your Approved Amount: <span className="text-green-400 font-bold">?{(revisedAmount ? parseFloat(revisedAmount) : selectedClaim.estimatedAmount)?.toLocaleString('en-IN')}</span></div>
-                                                                <div className="text-purple-300 font-medium">? Will be forwarded to IAgS / Admin for final payment sanction.</div>
+                                                                <div>Agri Officer Amount: <span className="text-blue-400">₹{selectedClaim.estimatedAmount?.toLocaleString('en-IN')}</span></div>
+                                                                <div>Your Approved Amount: <span className="text-green-400 font-bold">₹{(revisedAmount ? parseFloat(revisedAmount) : selectedClaim.estimatedAmount)?.toLocaleString('en-IN')}</span></div>
+                                                                <div className="text-purple-300 font-medium">→ Will be forwarded to IAgS / Admin for final payment sanction.</div>
                                                             </div>
                                                         )}
                                                     </div>
@@ -472,8 +469,8 @@ export default function TahsildarDashboard() {
                                                     >
                                                         {submitting ? <><Loader2 className="w-5 h-5 animate-spin" /> Submitting...</> :
                                                             decision === 'approve'
-                                                                ? `? Approve & Send to TNAS � ?${(revisedAmount ? parseFloat(revisedAmount) : selectedClaim.estimatedAmount)?.toLocaleString('en-IN')}`
-                                                                : '? Confirm Rejection'
+                                                                ? `✅ Approve & Send to TNAS — ₹${(revisedAmount ? parseFloat(revisedAmount) : selectedClaim.estimatedAmount)?.toLocaleString('en-IN')}`
+                                                                : '❌ Confirm Rejection'
                                                         }
                                                     </button>
                                                 </motion.div>
@@ -494,12 +491,12 @@ export default function TahsildarDashboard() {
                                         <div className="grid grid-cols-2 gap-2 text-xs mb-3">
                                             <div className="bg-[#ffffff] p-2 rounded-lg">
                                                 <div className="text-[#64748b]">Agri Officer Quoted</div>
-                                                <div className="text-blue-400 font-bold">?{selectedClaim.estimatedAmount?.toLocaleString('en-IN')}</div>
+                                                <div className="text-blue-400 font-bold">₹{selectedClaim.estimatedAmount?.toLocaleString('en-IN')}</div>
                                             </div>
                                             {selectedClaim.tahsildarApprovedAmount && (
                                                 <div className="bg-[#ffffff] p-2 rounded-lg">
                                                     <div className="text-[#64748b]">Your Approved Amount</div>
-                                                    <div className="text-green-400 font-bold">?{selectedClaim.tahsildarApprovedAmount?.toLocaleString('en-IN')}</div>
+                                                    <div className="text-green-400 font-bold">₹{selectedClaim.tahsildarApprovedAmount?.toLocaleString('en-IN')}</div>
                                                 </div>
                                             )}
                                         </div>
@@ -514,7 +511,7 @@ export default function TahsildarDashboard() {
                                         )}
                                         {selectedClaim.status === 'dna_approved' && (
                                             <div className="flex items-center gap-2 text-xs text-green-300 bg-green-500/5 border border-green-500/20 p-2 rounded-lg">
-                                                <ShieldCheck className="w-3 h-3" /> IAgS / Admin has sanctioned this claim ??
+                                                <ShieldCheck className="w-3 h-3" /> IAgS / Admin has sanctioned this claim 🎉
                                             </div>
                                         )}
                                         {/* QR Code for trace */}
@@ -531,7 +528,7 @@ export default function TahsildarDashboard() {
                                                     <div className="text-[10px] text-purple-400 font-mono">{selectedClaim.claimRefNo}</div>
                                                     <Link href={`/trace/relief/${selectedClaim.claimRefNo}`} target="_blank">
                                                         <button className="text-xs text-blue-400 hover:underline flex items-center gap-1 mt-1">
-                                                            <QrCode className="w-3 h-3" /> View Full Audit Trail ?
+                                                            <QrCode className="w-3 h-3" /> View Full Audit Trail →
                                                         </button>
                                                     </Link>
                                                 </div>
