@@ -1,7 +1,7 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 export type Role = "farmer" | "processor" | "retailer" | "consumer" | "regulator" | "tahsildar" | null;
 
@@ -134,3 +134,4 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
 }
 
 export const useRole = () => useContext(RoleContext);
+

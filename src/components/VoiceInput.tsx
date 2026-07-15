@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { Mic, MicOff, Volume2 } from "lucide-react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 interface VoiceInputProps {
     onTranscript: (text: string) => void;
@@ -48,7 +48,7 @@ export default function VoiceInput({ onTranscript, placeholder = "Tap mic and sp
 
         recognition.onerror = (event: any) => {
             if (event.error === "no-speech") {
-                toast("No speech detected. Try again.", { icon: "🎤" });
+                toast("No speech detected. Try again.", { icon: "??" });
             } else if (event.error === "not-allowed") {
                 toast.error("Microphone permission denied");
             }
@@ -59,7 +59,7 @@ export default function VoiceInput({ onTranscript, placeholder = "Tap mic and sp
 
         recognitionRef.current = recognition;
         recognition.start();
-        toast("🎤 Listening... Speak now", { duration: 2000 });
+        toast("?? Listening... Speak now", { duration: 2000 });
     };
 
     const stopListening = () => {
@@ -84,16 +84,16 @@ export default function VoiceInput({ onTranscript, placeholder = "Tap mic and sp
                     onClick={listening ? stopListening : startListening}
                     disabled={!supported}
                     className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm transition-all ${!supported
-                            ? "opacity-40 cursor-not-allowed bg-gray-800 text-gray-500"
+                            ? "opacity-40 cursor-not-allowed bg-gray-800 text-slate-500"
                             : listening
-                                ? "bg-red-600 hover:bg-red-700 text-white animate-pulse shadow-lg shadow-red-900/30"
+                                ? "bg-red-600 hover:bg-red-700 text-slate-900 animate-pulse shadow-lg shadow-red-900/30"
                                 : "bg-green-700 hover:bg-green-600 text-white shadow-lg shadow-green-900/30"
                         }`}
                 >
                     {listening ? (
-                        <><MicOff className="w-4 h-4" /> Stop (நிறுத்து)</>
+                        <><MicOff className="w-4 h-4" /> Stop (????????)</>
                     ) : (
-                        <><Mic className="w-4 h-4" /> Speak Tamil (தமிழில் பேசு)</>
+                        <><Mic className="w-4 h-4" /> Speak Tamil (??????? ????)</>
                     )}
                 </button>
 
@@ -117,15 +117,16 @@ export default function VoiceInput({ onTranscript, placeholder = "Tap mic and sp
 
             {transcript && (
                 <div className="p-2.5 rounded-lg bg-green-900/10 border border-green-500/20 text-sm text-green-300">
-                    🎤 {transcript}
+                    ?? {transcript}
                 </div>
             )}
 
             {!supported && (
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-slate-500">
                     Voice not available. Use Chrome/Edge on HTTPS for Tamil speech input.
                 </p>
             )}
         </div>
     );
 }
+

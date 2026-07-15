@@ -1,96 +1,131 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import { RoleProvider } from "@/lib/role-context";
-import { Toaster } from "react-hot-toast";
 import { Web3Provider } from "@/components/Web3Provider";
 import dynamic from "next/dynamic";
 
-const inter = Inter({ subsets: ["latin"] });
-
-// Load Three.js background client-side only
-const AgriBackground = dynamic(() => import("@/components/AgriBackground"), {
-  ssr: false,
+const inter = Inter({
+    subsets: ["latin"],
+    variable: "--font-inter",
+    display: "swap",
 });
 
-const AgriAssistant = dynamic(() => import("@/components/AgriAssistant"), {
-  ssr: false,
+const outfit = Outfit({
+    subsets: ["latin"],
+    variable: "--font-outfit",
+    display: "swap",
+    weight: ["400", "500", "600", "700", "800", "900"],
 });
+
+// CSS-only background — no Three.js
+const AnimatedBackground = dynamic(
+    () => import("@/components/AnimatedBackground"),
+    { ssr: false }
+);
+
+// AI assistant — client only (uses speech APIs)
+const AgriAssistant = dynamic(
+    () => import("@/components/AgriAssistant"),
+    { ssr: false }
+);
+
+// Toast notifications
+const Toaster = dynamic(
+    () => import("sonner").then((m) => ({ default: m.Toaster })),
+    { ssr: false }
+);
 
 export const metadata: Metadata = {
-  title: "AgriTraceIndia — Blockchain Farm-to-Fork | TNI26040",
-  description:
-    "Tamil Nadu's blockchain-powered agri-food supply chain traceability. Tamil voice input, QR scanning, offline-first PWA. Farm to Fork in 2 seconds.",
-  keywords: "blockchain, supply chain, agri, Tamil Nadu, traceability, farm to fork",
-  manifest: "/manifest.json",
-  themeColor: "#16a34a",
-  openGraph: {
-    title: "AgriTraceIndia — Blockchain Supply Chain",
-    description: "Farm to Fork Traceability for Tamil Nadu",
-    type: "website",
-  },
+    title: {
+        default: "AgriTraceIndia — Blockchain Farm-to-Fork",
+        template: "%s | AgriTraceIndia",
+    },
+    description:
+        "Tamil Nadu's blockchain-powered agri-food supply chain traceability. Tamil voice input, QR scanning, offline-first PWA. Farm to Fork in 2 seconds.",
+    keywords: [
+        "blockchain", "supply chain", "agriculture", "Tamil Nadu",
+        "traceability", "farm to fork", "AgriTrace", "food safety",
+    ],
+    manifest: "/manifest.json",
+    openGraph: {
+        title: "AgriTraceIndia — Blockchain Supply Chain",
+        description: "Farm to Fork Traceability for Tamil Nadu Agriculture",
+        type: "website",
+        locale: "ta_IN",
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "AgriTraceIndia",
+        description: "Farm to Fork Traceability for Tamil Nadu",
+    },
+    robots: {
+        index: true,
+        follow: true,
+    },
+};
+
+export const viewport: Viewport = {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    themeColor: "#16a34a",
 };
 
 export default function RootLayout({
-  children,
+    children,
 }: {
-  children: React.ReactNode;
+    children: React.ReactNode;
 }) {
-  return (
-    <html lang="ta-IN">
-      <head>
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=1"
-        />
-        {/* Preload Google Fonts */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-      </head>
-      <body className={inter.className}>
-        {/* ✨ Full-screen Three.js Agricultural Background */}
-        <AgriBackground />
+    return (
+        <html
+            lang="ta-IN"
+            className={`${inter.variable} ${outfit.variable}`}
+            suppressHydrationWarning
+        >
+            <head>
+                <link rel="icon" href="/favicon.ico" sizes="any" />
+                <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+                {/* Noto Sans Tamil — not in next/font, loaded manually */}
+                <link
+                    rel="stylesheet"
+                    href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;500;600&display=swap"
+                />
+            </head>
+            <body className={`${inter.className} bg-white text-slate-900`}>
+                {/* Animated CSS background — replaces Three.js WebGL */}
+                <AnimatedBackground />
 
-        <Web3Provider>
-          <RoleProvider>
-            {children}
-            <AgriAssistant />
-            <Toaster
-              position="top-center"
-              containerStyle={{ top: 70 }}
-              toastOptions={{
-                duration: 3500,
-                style: {
-                  background: "rgba(10, 26, 14, 0.96)",
-                  color: "#f0fdf4",
-                  border: "1px solid rgba(34,197,94,0.4)",
-                  borderRadius: "14px",
-                  backdropFilter: "blur(20px)",
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  padding: "12px 18px",
-                  boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
-                  maxWidth: "420px",
-                },
-                success: {
-                  duration: 3000,
-                  iconTheme: { primary: "#22c55e", secondary: "#0a1a0e" },
-                },
-                error: {
-                  duration: 4000,
-                  iconTheme: { primary: "#ef4444", secondary: "#0a1a0e" },
-                },
-              }}
-            />
-          </RoleProvider>
-        </Web3Provider>
-      </body>
-    </html>
-  );
+                <Web3Provider>
+                    <RoleProvider>
+                        {children}
+
+                        {/* AI Chat Assistant */}
+                        <AgriAssistant />
+
+                        {/* Toast Notifications */}
+                        <Toaster
+                            position="top-center"
+                            offset={72}
+                            toastOptions={{
+                                style: {
+                                    background: "#ffffff",
+                                    color: "#0f172a",
+                                    border: "1px solid #e2e8f0",
+                                    borderRadius: "12px",
+                                    fontSize: "14px",
+                                    fontWeight: 450,
+                                    padding: "12px 16px",
+                                    boxShadow: "0 4px 24px rgba(0,0,0,0.10)",
+                                    maxWidth: "420px",
+                                },
+                            }}
+                            theme="dark"
+                        />
+                    </RoleProvider>
+                </Web3Provider>
+            </body>
+        </html>
+    );
 }
+

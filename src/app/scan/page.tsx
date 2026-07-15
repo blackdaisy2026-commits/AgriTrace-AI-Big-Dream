@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
 import Link from "next/link";
@@ -10,8 +10,8 @@ import Link from "next/link";
 type ScanStatus = "idle" | "requesting" | "scanning" | "success" | "error";
 
 const DEMO_BATCHES = [
-    { id: "TN-DEMO001", crop: "Tomato 🍅", origin: "Dindigul", color: "#22c55e", desc: "Full journey — Harvest → Retail" },
-    { id: "TN-DEMO002", crop: "Banana 🍌", origin: "Theni", color: "#f59e0b", desc: "In Transit — Processing stage" },
+    { id: "TN-DEMO001", crop: "Tomato ??", origin: "Dindigul", color: "#22c55e", desc: "Full journey � Harvest ? Retail" },
+    { id: "TN-DEMO002", crop: "Banana ??", origin: "Theni", color: "#f59e0b", desc: "In Transit � Processing stage" },
 ];
 
 export default function ScanPage() {
@@ -29,7 +29,7 @@ export default function ScanPage() {
     const [scanProgress, setScanProgress] = useState(0);
     const [facingMode, setFacingMode] = useState<"environment" | "user">("environment");
 
-    // ── Stop all camera resources ──
+    // -- Stop all camera resources --
     const stopCamera = useCallback(() => {
         cancelAnimationFrame(animRef.current);
         if (streamRef.current) {
@@ -39,10 +39,10 @@ export default function ScanPage() {
         setStatus("idle");
     }, []);
 
-    // ── Cleanup on unmount ──
+    // -- Cleanup on unmount --
     useEffect(() => () => stopCamera(), [stopCamera]);
 
-    // ── Scan frame using jsQR ──
+    // -- Scan frame using jsQR --
     const startScanLoop = useCallback((video: HTMLVideoElement) => {
         let lastScanTime = 0;
         const SCAN_INTERVAL = 300; // Scan every 300ms
@@ -86,7 +86,7 @@ export default function ScanPage() {
                             stopCamera();
                             setScannedId(batchId);
                             setStatus("success");
-                            toast.success("✅ QR Code Scanned!", { duration: 2000 });
+                            toast.success("? QR Code Scanned!", { duration: 2000 });
                             setTimeout(() => router.push(`/trace/${batchId}`), 800);
                             return;
                         }
@@ -101,7 +101,7 @@ export default function ScanPage() {
         animRef.current = requestAnimationFrame(loop);
     }, [router, stopCamera]);
 
-    // ── Attach stream to video element once 'scanning' state is rendered ──
+    // -- Attach stream to video element once 'scanning' state is rendered --
     // This is the key fix for the black screen: we wait for the video element
     // to actually be in the DOM (after status='scanning' renders it), then attach.
     useEffect(() => {
@@ -122,7 +122,7 @@ export default function ScanPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [status]);
 
-    // ── Start Camera ──
+    // -- Start Camera --
     const startCamera = useCallback(async (mode?: "environment" | "user") => {
         const targetMode = mode ?? facingMode;
         setStatus("requesting");
@@ -143,7 +143,7 @@ export default function ScanPage() {
                 audio: false,
             });
             streamRef.current = stream;
-            // Set status to 'scanning' — this renders <video> into the DOM.
+            // Set status to 'scanning' � this renders <video> into the DOM.
             // The useEffect above will then attach srcObject once it's mounted.
             setStatus("scanning");
         } catch (err: any) {
@@ -168,7 +168,7 @@ export default function ScanPage() {
         }
     }, [facingMode]);
 
-    // ── Navigate to batch ──
+    // -- Navigate to batch --
     const goToBatch = (id: string) => {
         const trimmed = id.trim();
         if (!trimmed) return;
@@ -185,17 +185,17 @@ export default function ScanPage() {
             <div className="max-w-xl mx-auto px-4 py-8">
                 {/* Header */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
-                    <div className="text-6xl mb-3">📷</div>
-                    <h1 className="text-3xl font-bold text-white mb-2" style={{ fontFamily: "Outfit, sans-serif" }}>
+                    <div className="text-6xl mb-3">??</div>
+                    <h1 className="text-3xl font-bold text-slate-900 mb-2" style={{ fontFamily: "Outfit, sans-serif" }}>
                         Scan QR Code
                     </h1>
-                    <p className="text-gray-400 text-sm">
+                    <p className="text-[#475569] text-sm">
                         Point camera at product QR to trace its farm-to-fork journey
                     </p>
                 </motion.div>
 
-                {/* ── CAMERA BOX ── */}
-                <div className="glass-card p-4 mb-5 overflow-hidden">
+                {/* -- CAMERA BOX -- */}
+                <div className="card p-4 mb-5 overflow-hidden">
                     <AnimatePresence mode="wait">
 
                         {/* IDLE STATE */}
@@ -205,8 +205,8 @@ export default function ScanPage() {
                             >
                                 {/* Animated scan frame */}
                                 <div className="relative mx-auto mb-6" style={{ width: 220, height: 220 }}>
-                                    <div className="w-full h-full rounded-2xl border-2 border-dashed border-green-500/30 flex items-center justify-center bg-black/20">
-                                        <span className="text-6xl">🌾</span>
+                                    <div className="w-full h-full rounded-2xl border-2 border-dashed border-green-500/30 flex items-center justify-center bg-slate-50">
+                                        <span className="text-6xl">??</span>
                                     </div>
                                     {/* Corner brackets */}
                                     {[
@@ -229,12 +229,12 @@ export default function ScanPage() {
                                     whileHover={{ scale: 1.03 }}
                                     whileTap={{ scale: 0.97 }}
                                     onClick={() => startCamera()}
-                                    className="w-full btn-glow text-white font-bold py-4 rounded-xl text-lg flex items-center justify-center gap-3"
+                                    className="w-full btn btn-primary text-white font-bold py-4 rounded-xl text-lg flex items-center justify-center gap-3"
                                 >
-                                    <span className="text-2xl">📷</span> Start Camera Scanner
+                                    <span className="text-2xl">??</span> Start Camera Scanner
                                 </motion.button>
-                                <p className="text-xs text-gray-600 mt-3">
-                                    Works on Chrome, Edge, Safari · Camera permission required
+                                <p className="text-xs text-[#64748b] mt-3">
+                                    Works on Chrome, Edge, Safari � Camera permission required
                                 </p>
                             </motion.div>
                         )}
@@ -249,12 +249,12 @@ export default function ScanPage() {
                                     transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
                                     className="w-12 h-12 border-2 border-green-500 border-t-transparent rounded-full mx-auto mb-4"
                                 />
-                                <p className="text-white font-medium">Requesting camera access…</p>
-                                <p className="text-gray-500 text-xs mt-1">Please click "Allow" in the browser prompt</p>
+                                <p className="text-slate-900 font-medium">Requesting camera access�</p>
+                                <p className="text-[#64748b] text-xs mt-1">Please click "Allow" in the browser prompt</p>
                             </motion.div>
                         )}
 
-                        {/* SCANNING — live video feed */}
+                        {/* SCANNING � live video feed */}
                         {status === "scanning" && (
                             <motion.div key="scanning" initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}>
                                 <div className="relative rounded-xl overflow-hidden bg-black" style={{ aspectRatio: "4/3" }}>
@@ -292,16 +292,16 @@ export default function ScanPage() {
 
                                         {/* Status pill */}
                                         <div className="absolute top-3 left-1/2 -translate-x-1/2">
-                                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/60 border border-green-500/40">
+                                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-200 border border-green-500/40">
                                                 <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                                                <span className="text-xs text-green-400 font-medium">Scanning for QR…</span>
+                                                <span className="text-xs text-green-400 font-medium">Scanning for QR�</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Progress bar */}
-                                <div className="mt-3 h-1 rounded-full bg-white/5 overflow-hidden">
+                                <div className="mt-3 h-1 rounded-full bg-[#ffffff] overflow-hidden">
                                     <motion.div
                                         className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full"
                                         animate={{ x: ["-100%", "200%"] }}
@@ -314,7 +314,7 @@ export default function ScanPage() {
                                         onClick={stopCamera}
                                         className="flex-1 py-3 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-900/20 transition-colors text-sm font-medium flex items-center justify-center gap-2"
                                     >
-                                        ✕ Stop
+                                        ? Stop
                                     </button>
                                     <button
                                         onClick={() => {
@@ -325,7 +325,7 @@ export default function ScanPage() {
                                         }}
                                         className="flex-1 py-3 rounded-xl border border-blue-500/30 text-blue-400 hover:bg-blue-900/20 transition-colors text-sm font-medium flex items-center justify-center gap-2"
                                     >
-                                        📸 {facingMode === "user" ? "Switch to Back" : "Switch to Front"}
+                                        ?? {facingMode === "user" ? "Switch to Back" : "Switch to Front"}
                                     </button>
                                 </div>
                             </motion.div>
@@ -340,10 +340,10 @@ export default function ScanPage() {
                                     initial={{ scale: 0 }} animate={{ scale: 1 }}
                                     transition={{ type: "spring", stiffness: 300 }}
                                     className="text-6xl mb-4"
-                                >✅</motion.div>
-                                <p className="text-white font-bold text-xl mb-1">QR Scanned!</p>
+                                >?</motion.div>
+                                <p className="text-slate-900 font-bold text-xl mb-1">QR Scanned!</p>
                                 <p className="text-green-400 font-mono text-sm mb-4">{scannedId}</p>
-                                <p className="text-gray-500 text-xs">Redirecting to trace page…</p>
+                                <p className="text-[#64748b] text-xs">Redirecting to trace page�</p>
                             </motion.div>
                         )}
 
@@ -352,17 +352,17 @@ export default function ScanPage() {
                             <motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                                 className="text-center py-8"
                             >
-                                <div className="text-5xl mb-4">⚠️</div>
+                                <div className="text-5xl mb-4">??</div>
                                 <p className="text-red-400 font-semibold mb-2">Camera Error</p>
-                                <p className="text-gray-400 text-sm mb-6 max-w-xs mx-auto">{errorMsg}</p>
+                                <p className="text-[#475569] text-sm mb-6 max-w-xs mx-auto">{errorMsg}</p>
                                 <div className="space-y-2">
                                     <button
                                         onClick={() => setStatus("idle")}
-                                        className="w-full btn-glow text-white py-3 rounded-xl font-medium"
+                                        className="w-full btn btn-primary text-white py-3 rounded-xl font-medium"
                                     >
-                                        🔄 Try Again
+                                        ?? Try Again
                                     </button>
-                                    <p className="text-xs text-gray-600">
+                                    <p className="text-xs text-[#64748b]">
                                         Tip: Use HTTPS or try the manual lookup below
                                     </p>
                                 </div>
@@ -372,15 +372,15 @@ export default function ScanPage() {
                     </AnimatePresence>
                 </div>
 
-                {/* ── MANUAL LOOKUP ── */}
+                {/* -- MANUAL LOOKUP -- */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="glass-card p-5 mb-5"
+                    className="card p-5 mb-5"
                 >
-                    <h2 className="font-semibold text-white mb-3 flex items-center gap-2">
-                        🔍 Manual Batch ID Lookup
+                    <h2 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                        ?? Manual Batch ID Lookup
                     </h2>
                     <div className="flex gap-2">
                         <input
@@ -395,21 +395,21 @@ export default function ScanPage() {
                             whileTap={{ scale: 0.96 }}
                             onClick={() => goToBatch(manualId)}
                             disabled={!manualId.trim()}
-                            className="px-5 py-2.5 btn-glow text-white rounded-xl text-sm font-bold disabled:opacity-40 whitespace-nowrap"
+                            className="px-5 py-2.5 btn btn-primary text-white rounded-xl text-sm font-bold disabled:opacity-40 whitespace-nowrap"
                         >
-                            Go →
+                            Go ?
                         </motion.button>
                     </div>
                 </motion.div>
 
-                {/* ── DEMO BATCHES ── */}
+                {/* -- DEMO BATCHES -- */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="glass-card p-5 mb-5"
+                    className="card p-5 mb-5"
                 >
-                    <h2 className="font-semibold text-white mb-4">🎯 Try Demo Batches</h2>
+                    <h2 className="font-semibold text-slate-900 mb-4">?? Try Demo Batches</h2>
                     <div className="space-y-3">
                         {DEMO_BATCHES.map((demo, i) => (
                             <motion.button
@@ -417,13 +417,13 @@ export default function ScanPage() {
                                 whileHover={{ scale: 1.02, x: 4 }}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => goToBatch(demo.id)}
-                                className="w-full flex items-center gap-4 p-4 rounded-xl text-left transition-all hover:bg-white/5"
+                                className="w-full flex items-center gap-4 p-4 rounded-xl text-left transition-all hover:bg-[#ffffff]"
                                 style={{ border: `1px solid ${demo.color}30`, background: `${demo.color}08` }}
                             >
                                 <span className="text-3xl">{demo.crop.split(" ")[1]}</span>
                                 <div className="flex-1">
-                                    <div className="font-semibold text-white text-sm">{demo.crop.split(" ")[0]} — {demo.origin}</div>
-                                    <div className="text-xs text-gray-500 mt-0.5">{demo.desc}</div>
+                                    <div className="font-semibold text-slate-900 text-sm">{demo.crop.split(" ")[0]} � {demo.origin}</div>
+                                    <div className="text-xs text-[#64748b] mt-0.5">{demo.desc}</div>
                                 </div>
                                 <div>
                                     <div
@@ -438,14 +438,14 @@ export default function ScanPage() {
                     </div>
                 </motion.div>
 
-                {/* ── QR PREVIEW FOR DEMO ── */}
+                {/* -- QR PREVIEW FOR DEMO -- */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
-                    className="glass-card p-5"
+                    className="card p-5"
                 >
-                    <h2 className="font-semibold text-white mb-4">📱 Scan These Demo QR Codes</h2>
+                    <h2 className="font-semibold text-slate-900 mb-4">?? Scan These Demo QR Codes</h2>
                     <div className="grid grid-cols-2 gap-4">
                         {DEMO_BATCHES.map(demo => (
                             <div key={demo.id} className="text-center">
@@ -462,15 +462,16 @@ export default function ScanPage() {
                                     />
                                 </div>
                                 <div className="text-xs font-mono" style={{ color: demo.color }}>{demo.id}</div>
-                                <div className="text-xs text-gray-500">{demo.crop.split(" ")[0]}</div>
+                                <div className="text-xs text-[#64748b]">{demo.crop.split(" ")[0]}</div>
                             </div>
                         ))}
                     </div>
-                    <p className="text-xs text-gray-600 text-center mt-3">
-                        Open on phone → scan QR above with camera · or click the code to trace directly
+                    <p className="text-xs text-[#64748b] text-center mt-3">
+                        Open on phone ? scan QR above with camera � or click the code to trace directly
                     </p>
                 </motion.div>
             </div>
         </div>
     );
 }
+

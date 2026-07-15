@@ -3,7 +3,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import { Phone, Mail, MapPin, Send, MessageSquare } from "lucide-react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 export default function ContactPage() {
     const handleSubmit = (e: React.FormEvent) => {
@@ -23,10 +23,10 @@ export default function ContactPage() {
                         className="text-center mb-16"
                     >
                         <h2 className="text-sm font-bold text-green-400 uppercase tracking-widest mb-3">Support Center</h2>
-                        <h1 className="text-5xl font-black text-white mb-6 font-outfit">
+                        <h1 className="text-5xl font-black text-slate-900 mb-6 font-outfit">
                             Get in <span className="gradient-text">Touch</span>
                         </h1>
-                        <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+                        <p className="text-[#475569] text-lg max-w-2xl mx-auto">
                             Have questions about onboarding your farm or tracking a batch? Our team is here to help 24/7 across Tamil Nadu.
                         </p>
                     </motion.div>
@@ -34,34 +34,34 @@ export default function ContactPage() {
                     <div className="grid md:grid-cols-3 gap-8">
                         {/* Contact Info */}
                         <div className="space-y-4">
-                            <div className="glass-card p-6 flex items-start gap-4 border-green-500/10">
+                            <div className="card p-6 flex items-start gap-4 border-green-500/10">
                                 <div className="p-3 rounded-lg bg-green-500/10 text-green-400">
                                     <Phone className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-white mb-1">Helpdesk</h4>
-                                    <p className="text-sm text-gray-500">1800-AGRI-TN (Toll Free)</p>
+                                    <h4 className="font-bold text-slate-900 mb-1">Helpdesk</h4>
+                                    <p className="text-sm text-[#64748b]">1800-AGRI-TN (Toll Free)</p>
                                     <p className="text-xs text-green-400/60 mt-1">Available in Tamil & English</p>
                                 </div>
                             </div>
 
-                            <div className="glass-card p-6 flex items-start gap-4 border-blue-500/10">
+                            <div className="card p-6 flex items-start gap-4 border-blue-500/10">
                                 <div className="p-3 rounded-lg bg-blue-500/10 text-blue-400">
                                     <Mail className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-white mb-1">Email Us</h4>
-                                    <p className="text-sm text-gray-500">support@agritraceindia.in</p>
+                                    <h4 className="font-bold text-slate-900 mb-1">Email Us</h4>
+                                    <p className="text-sm text-[#64748b]">support@agritraceindia.in</p>
                                 </div>
                             </div>
 
-                            <div className="glass-card p-6 flex items-start gap-4 border-purple-500/10">
+                            <div className="card p-6 flex items-start gap-4 border-purple-500/10">
                                 <div className="p-3 rounded-lg bg-purple-500/10 text-purple-400">
                                     <MapPin className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-white mb-1">HQ Address</h4>
-                                    <p className="text-sm text-gray-500 leading-relaxed">
+                                    <h4 className="font-bold text-slate-900 mb-1">HQ Address</h4>
+                                    <p className="text-sm text-[#64748b] leading-relaxed">
                                         TNHB Complex, 2nd Floor,<br />
                                         Anna Salai, Chennai,<br />
                                         Tamil Nadu 600002
@@ -72,10 +72,10 @@ export default function ContactPage() {
 
                         {/* Contact Form */}
                         <div className="md:col-span-2">
-                            <form onSubmit={handleSubmit} className="glass-card p-8 border-white/5 space-y-6">
+                            <form onSubmit={handleSubmit} className="card p-8 border-[#e2e8f0] space-y-6">
                                 <div className="grid md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-xs font-bold text-gray-400 uppercase tracking-tighter">Full Name</label>
+                                        <label className="text-xs font-bold text-[#475569] uppercase tracking-tighter">Full Name</label>
                                         <input
                                             type="text"
                                             required
@@ -84,18 +84,18 @@ export default function ContactPage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-xs font-bold text-gray-400 uppercase tracking-tighter">Role</label>
+                                        <label className="text-xs font-bold text-[#475569] uppercase tracking-tighter">Role</label>
                                         <select className="agri-select">
-                                            <option>Farmer / விவசாயி</option>
-                                            <option>Consumer / நுகர்வோர்</option>
-                                            <option>Retailer / சில்லறை வணிகர்</option>
-                                            <option>IAgS / Admin / நிர்வாகி</option>
+                                            <option>Farmer / ???????</option>
+                                            <option>Consumer / ?????????</option>
+                                            <option>Retailer / ??????? ??????</option>
+                                            <option>IAgS / Admin / ????????</option>
                                         </select>
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-tighter">Subject</label>
+                                    <label className="text-xs font-bold text-[#475569] uppercase tracking-tighter">Subject</label>
                                     <input
                                         type="text"
                                         required
@@ -105,7 +105,7 @@ export default function ContactPage() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-tighter">Message</label>
+                                    <label className="text-xs font-bold text-[#475569] uppercase tracking-tighter">Message</label>
                                     <textarea
                                         rows={4}
                                         required
@@ -116,7 +116,7 @@ export default function ContactPage() {
 
                                 <button
                                     type="submit"
-                                    className="w-full btn-glow text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 group"
+                                    className="w-full btn btn-primary text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 group"
                                 >
                                     <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                                     Send Message
@@ -125,16 +125,16 @@ export default function ContactPage() {
                         </div>
                     </div>
 
-                    <div className="mt-20 glass-card p-10 text-center border-amber-500/10">
+                    <div className="mt-20 card p-10 text-center border-amber-500/10">
                         <MessageSquare className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-                        <h3 className="text-2xl font-bold text-white mb-2">Live Support Hubs</h3>
-                        <p className="text-gray-400 max-w-xl mx-auto mb-8">
+                        <h3 className="text-2xl font-bold text-slate-900 mb-2">Live Support Hubs</h3>
+                        <p className="text-[#475569] max-w-xl mx-auto mb-8">
                             We have physical support centers in Coimbatore, Madurai, and Trichy for on-field farmer training.
                         </p>
                         <div className="flex flex-wrap justify-center gap-4">
-                            <span className="text-xs px-4 py-2 rounded-full bg-white/5 border border-white/5 text-gray-500">📍 Madurai APMC</span>
-                            <span className="text-xs px-4 py-2 rounded-full bg-white/5 border border-white/5 text-gray-500">📍 Coimbatore Agri Univ</span>
-                            <span className="text-xs px-4 py-2 rounded-full bg-white/5 border border-white/5 text-gray-500">📍 Trichy Hub</span>
+                            <span className="text-xs px-4 py-2 rounded-full bg-[#ffffff] border border-[#e2e8f0] text-[#64748b]">?? Madurai APMC</span>
+                            <span className="text-xs px-4 py-2 rounded-full bg-[#ffffff] border border-[#e2e8f0] text-[#64748b]">?? Coimbatore Agri Univ</span>
+                            <span className="text-xs px-4 py-2 rounded-full bg-[#ffffff] border border-[#e2e8f0] text-[#64748b]">?? Trichy Hub</span>
                         </div>
                     </div>
                 </div>
@@ -143,3 +143,4 @@ export default function ContactPage() {
         </div>
     );
 }
+

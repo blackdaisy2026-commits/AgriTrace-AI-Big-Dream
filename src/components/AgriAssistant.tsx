@@ -6,7 +6,7 @@ import {
     Volume2, VolumeX, Sparkles, TrendingUp, ChevronRight,
     RefreshCw, Leaf, Shield, IndianRupee, Clock, HelpCircle
 } from "lucide-react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 interface Message {
@@ -456,7 +456,7 @@ export default function AgriAssistant() {
                         initial={{ opacity: 0, y: 20, scale: 0.9 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 20, scale: 0.9 }}
-                        className="w-[360px] sm:w-[420px] mb-4 flex flex-col shadow-2xl overflow-hidden rounded-2xl border border-white/10"
+                        className="w-[360px] sm:w-[420px] mb-4 flex flex-col shadow-2xl overflow-hidden rounded-2xl border border-slate-200"
                         style={{ height: '580px', background: 'rgba(5,15,5,0.96)', backdropFilter: 'blur(20px)' }}
                     >
                         {/* Header */}
@@ -464,7 +464,7 @@ export default function AgriAssistant() {
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-2xl bg-white/20 border border-white/30 flex items-center justify-center text-xl">🤖</div>
                                 <div>
-                                    <div className="text-white font-black text-sm tracking-wide">AgriTraceIndia AI</div>
+                                    <div className="text-slate-900 font-black text-sm tracking-wide">AgriTraceIndia AI</div>
                                     <div className="flex items-center gap-1.5">
                                         <span className="w-1.5 h-1.5 rounded-full bg-green-300 animate-pulse" />
                                         <span className="text-[10px] text-green-100 uppercase tracking-widest font-bold">Live · Market Data</span>
@@ -472,10 +472,10 @@ export default function AgriAssistant() {
                                 </div>
                             </div>
                             <div className="flex items-center gap-1">
-                                <button onClick={handleNewChat} title="New Chat" className="p-2 hover:bg-white/10 rounded-xl text-white/70 hover:text-white transition-all">
+                                <button onClick={handleNewChat} title="New Chat" className="p-2 hover:bg-slate-100 rounded-xl text-white/70 hover:text-slate-900 transition-all">
                                     <RefreshCw className="w-3.5 h-3.5" />
                                 </button>
-                                <button onClick={() => setIsMuted(!isMuted)} className="p-2 hover:bg-white/10 rounded-xl text-white/70 hover:text-white transition-all">
+                                <button onClick={() => setIsMuted(!isMuted)} className="p-2 hover:bg-slate-100 rounded-xl text-white/70 hover:text-slate-900 transition-all">
                                     {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                                 </button>
                                 <button onClick={() => setIsOpen(false)} className="p-2 hover:bg-red-500/20 rounded-xl text-white/70 hover:text-red-300 transition-all">
@@ -490,11 +490,11 @@ export default function AgriAssistant() {
                             {/* Quick Actions (shown at start) */}
                             {showQuickActions && (
                                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-2">
-                                    <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-2">அடிக்கடி கேட்கப்படுவை | Popular</p>
+                                    <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-2">அடிக்கடி கேட்கப்படுவை | Popular</p>
                                     <div className="flex flex-wrap gap-1.5">
                                         {QUICK_ACTIONS.map(qa => (
                                             <button key={qa.label} onClick={() => processInput(qa.query)}
-                                                className="px-2.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[11px] text-gray-300 hover:text-white hover:bg-green-500/20 hover:border-green-500/30 transition-all">
+                                                className="px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-600 hover:text-white hover:bg-green-500/20 hover:border-green-500/30 transition-all">
                                                 {qa.label}
                                             </button>
                                         ))}
@@ -514,8 +514,8 @@ export default function AgriAssistant() {
                                     )}
                                     <div className="flex flex-col gap-2 max-w-[85%]">
                                         <div className={`p-3 rounded-2xl text-sm whitespace-pre-line leading-relaxed ${m.sender === 'user'
-                                            ? 'bg-gradient-to-br from-green-600 to-emerald-700 text-white rounded-tr-none'
-                                            : 'bg-white/8 border border-white/10 text-gray-100 rounded-tl-none'}`}>
+                                            ? 'bg-gradient-to-br from-green-600 to-emerald-700 text-slate-900 rounded-tr-none'
+                                            : 'bg-white/8 border border-slate-200 text-gray-100 rounded-tl-none'}`}>
                                             {m.text}
                                             <div className="text-[9px] opacity-40 mt-1 text-right">
                                                 {m.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -533,8 +533,8 @@ export default function AgriAssistant() {
                                                     <div className="flex items-center gap-2">
                                                         <span className="text-3xl">{m.card.emoji}</span>
                                                         <div>
-                                                            <div className="font-black text-white">{m.card.crop}</div>
-                                                            <div className="text-[10px] text-gray-400">{m.card.district} · {m.card.market}</div>
+                                                            <div className="font-black text-slate-900">{m.card.crop}</div>
+                                                            <div className="text-[10px] text-slate-500">{m.card.district} · {m.card.market}</div>
                                                         </div>
                                                     </div>
                                                     <div className="text-[10px] text-green-400 bg-green-500/10 border border-green-500/20 px-2 py-1 rounded-full">Live</div>
@@ -542,21 +542,21 @@ export default function AgriAssistant() {
                                                 <div className="grid grid-cols-3 gap-2">
                                                     <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-2 text-center">
                                                         <div className="text-[9px] text-red-400 mb-0.5">Min</div>
-                                                        <div className="text-white font-black">₹{m.card.min}</div>
-                                                        <div className="text-[9px] text-gray-500">/quintal</div>
+                                                        <div className="text-slate-900 font-black">₹{m.card.min}</div>
+                                                        <div className="text-[9px] text-slate-500">/quintal</div>
                                                     </div>
                                                     <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-2 text-center">
                                                         <div className="text-[9px] text-green-400 mb-0.5">Modal</div>
                                                         <div className="text-green-400 font-black text-lg">₹{m.card.modal}</div>
-                                                        <div className="text-[9px] text-gray-500">/quintal</div>
+                                                        <div className="text-[9px] text-slate-500">/quintal</div>
                                                     </div>
                                                     <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-2 text-center">
                                                         <div className="text-[9px] text-blue-400 mb-0.5">Max</div>
-                                                        <div className="text-white font-black">₹{m.card.max}</div>
-                                                        <div className="text-[9px] text-gray-500">/quintal</div>
+                                                        <div className="text-slate-900 font-black">₹{m.card.max}</div>
+                                                        <div className="text-[9px] text-slate-500">/quintal</div>
                                                     </div>
                                                 </div>
-                                                <div className="mt-2 text-[9px] text-gray-500 flex items-center gap-1">
+                                                <div className="mt-2 text-[9px] text-slate-500 flex items-center gap-1">
                                                     <TrendingUp className="w-3 h-3" /> Source: data.gov.in · Updated today
                                                 </div>
                                             </motion.div>
@@ -565,7 +565,7 @@ export default function AgriAssistant() {
                                         {/* Speak again button */}
                                         {m.sender === 'bot' && (
                                             <button onClick={() => speak(m.text)}
-                                                className="self-start text-[10px] text-gray-600 hover:text-green-400 flex items-center gap-1 transition-all">
+                                                className="self-start text-[10px] text-slate-600 hover:text-green-400 flex items-center gap-1 transition-all">
                                                 <Volume2 className="w-3 h-3" /> Speak
                                             </button>
                                         )}
@@ -577,7 +577,7 @@ export default function AgriAssistant() {
                             {isTyping && (
                                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2">
                                     <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-green-600 to-emerald-700 flex items-center justify-center text-sm">🤖</div>
-                                    <div className="bg-white/8 border border-white/10 rounded-2xl rounded-tl-none px-4 py-3 flex items-center gap-1.5">
+                                    <div className="bg-white/8 border border-slate-200 rounded-2xl rounded-tl-none px-4 py-3 flex items-center gap-1.5">
                                         <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                                         <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                                         <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -588,10 +588,10 @@ export default function AgriAssistant() {
 
                         {/* Suggestion chips */}
                         {messages.length > 1 && (
-                            <div className="px-3 py-2 border-t border-white/5 flex gap-2 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+                            <div className="px-3 py-2 border-t border-slate-200 flex gap-2 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
                                 {["🍅 தக்காளி விலை?", "🆘 Relief Fund?", "⛓️ Blockchain?", "📱 QR Trace?", "🏛️ Schemes?"].map(s => (
                                     <button key={s} onClick={() => processInput(s)}
-                                        className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] text-gray-400 hover:text-green-400 hover:border-green-500/30 whitespace-nowrap transition-all flex-shrink-0">
+                                        className="px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-[10px] text-slate-500 hover:text-green-400 hover:border-green-500/30 whitespace-nowrap transition-all flex-shrink-0">
                                         {s}
                                     </button>
                                 ))}
@@ -599,10 +599,10 @@ export default function AgriAssistant() {
                         )}
 
                         {/* Input */}
-                        <div className="p-3 border-t border-white/10 bg-black/30 flex-shrink-0">
+                        <div className="p-3 border-t border-slate-200 bg-black/30 flex-shrink-0">
                             <div className="flex items-center gap-2">
                                 <button onClick={toggleVoice}
-                                    className={`p-3 rounded-xl transition-all flex-shrink-0 ${isListening ? 'bg-red-600 text-white animate-pulse shadow-lg shadow-red-900/40' : 'bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10'}`}>
+                                    className={`p-3 rounded-xl transition-all flex-shrink-0 ${isListening ? 'bg-red-600 text-slate-900 animate-pulse shadow-lg shadow-red-900/40' : 'bg-slate-50 border border-slate-200 text-slate-500 hover:bg-slate-100'}`}>
                                     {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                                 </button>
                                 <input
@@ -611,14 +611,14 @@ export default function AgriAssistant() {
                                     onChange={e => setInputText(e.target.value)}
                                     onKeyDown={e => e.key === 'Enter' && processInput(inputText)}
                                     placeholder="கேளுங்கள்... Ask anything..."
-                                    className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-green-500/50 transition-all"
+                                    className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder-gray-600 focus:outline-none focus:border-green-500/50 transition-all"
                                 />
                                 <button onClick={() => processInput(inputText)}
-                                    className="p-3 bg-gradient-to-br from-green-600 to-emerald-700 hover:from-green-500 hover:to-emerald-600 text-white rounded-xl shadow-lg shadow-green-900/30 flex-shrink-0 transition-all">
+                                    className="p-3 bg-gradient-to-br from-green-600 to-emerald-700 hover:from-green-500 hover:to-emerald-600 text-slate-900 rounded-xl shadow-lg shadow-green-900/30 flex-shrink-0 transition-all">
                                     <Send className="w-4 h-4" />
                                 </button>
                             </div>
-                            <p className="text-[9px] text-gray-700 text-center mt-1.5">Tamil / English · Voice supported · Market data: data.gov.in</p>
+                            <p className="text-[9px] text-slate-700 text-center mt-1.5">Tamil / English · Voice supported · Market data: data.gov.in</p>
                         </div>
                     </motion.div>
                 )}
@@ -650,3 +650,4 @@ export default function AgriAssistant() {
         </div>
     );
 }
+

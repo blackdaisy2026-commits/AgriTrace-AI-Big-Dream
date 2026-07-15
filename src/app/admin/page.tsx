@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useRole } from "@/lib/role-context";
 import Header from "@/components/Header";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import {
     Users,
     Package,
@@ -72,16 +72,16 @@ export default function AdminDashboard() {
     };
 
     return (
-        <div className="min-h-screen circuit-bg">
+        <div className="min-h-screen min-h-screen">
             <Header />
             <div className="max-w-7xl mx-auto px-4 py-8">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                     <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-                        <h1 className="text-4xl font-bold text-white flex items-center gap-3">
+                        <h1 className="text-4xl font-bold text-slate-900 flex items-center gap-3">
                             <Database className="text-blue-400" />
                             System Explorer
                         </h1>
-                        <p className="text-gray-400 mt-1">Direct view of AgriTraceIndia Blockchain & MongoDB Ledger</p>
+                        <p className="text-[#475569] mt-1">Direct view of AgriTraceIndia Blockchain & MongoDB Ledger</p>
                     </motion.div>
 
                     <div className="flex items-center gap-3">
@@ -96,7 +96,7 @@ export default function AdminDashboard() {
                         </div>
                         <button
                             onClick={fetchData}
-                            className="p-2.5 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition-all"
+                            className="p-2.5 bg-[#ffffff] border border-slate-200 rounded-xl text-[#475569] hover:text-slate-900 hover:bg-slate-100 transition-all"
                         >
                             <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
                         </button>
@@ -110,21 +110,21 @@ export default function AdminDashboard() {
                         { label: "Total Transactions", value: data.events.length.toString(), sub: "On-Chain Verified", icon: <History className="text-blue-400" /> },
                         { label: "Sync Status", value: "100%", sub: "Blockchain ↔ DB", icon: <RefreshCw className="text-purple-400" /> },
                     ].map((s, i) => (
-                        <div key={i} className="glass-card p-6 flex items-center gap-5">
-                            <div className="p-3 bg-white/5 rounded-2xl text-2xl">
+                        <div key={i} className="card p-6 flex items-center gap-5">
+                            <div className="p-3 bg-[#ffffff] rounded-2xl text-2xl">
                                 {s.icon}
                             </div>
                             <div>
-                                <div className="text-xs text-gray-500 font-medium uppercase tracking-wider">{s.label}</div>
-                                <div className="text-2xl font-bold text-white">{s.value}</div>
-                                <div className="text-xs text-gray-400">{s.sub}</div>
+                                <div className="text-xs text-[#64748b] font-medium uppercase tracking-wider">{s.label}</div>
+                                <div className="text-2xl font-bold text-slate-900">{s.value}</div>
+                                <div className="text-xs text-[#475569]">{s.sub}</div>
                             </div>
                         </div>
                     ))}
                 </div>
 
                 {/* Tabs */}
-                <div className="flex border-b border-white/10 mb-6 overflow-x-auto no-scrollbar">
+                <div className="flex border-b border-slate-200 mb-6 overflow-x-auto no-scrollbar">
                     {[
                         { id: "batches", label: "📦 Product Batches", icon: <Package className="w-4 h-4" /> },
                         { id: "events", label: "🔗 Blockchain Events", icon: <History className="w-4 h-4" /> },
@@ -133,7 +133,7 @@ export default function AdminDashboard() {
                         <button
                             key={t.id}
                             onClick={() => setActiveTab(t.id as any)}
-                            className={`px-6 py-4 flex items-center gap-2 text-sm font-medium transition-all whitespace-nowrap border-b-2 ${activeTab === t.id ? "border-blue-500 text-blue-400 bg-blue-500/5" : "border-transparent text-gray-500 hover:text-gray-300"}`}
+                            className={`px-6 py-4 flex items-center gap-2 text-sm font-medium transition-all whitespace-nowrap border-b-2 ${activeTab === t.id ? "border-blue-500 text-blue-400 bg-blue-500/5" : "border-transparent text-[#64748b] hover:text-slate-600"}`}
                         >
                             {t.icon}
                             {t.label}
@@ -142,10 +142,10 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Content Table */}
-                <div className="glass-card overflow-hidden">
+                <div className="card overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
-                            <thead className="bg-white/5 text-gray-400 text-xs uppercase tracking-wider">
+                            <thead className="bg-[#ffffff] text-[#475569] text-xs uppercase tracking-wider">
                                 {activeTab === "batches" && (
                                     <tr>
                                         <th className="px-6 py-4">Batch ID</th>
@@ -178,14 +178,14 @@ export default function AdminDashboard() {
                             <tbody className="divide-y divide-white/5">
                                 {loading ? (
                                     <tr>
-                                        <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                                        <td colSpan={6} className="px-6 py-12 text-center text-[#64748b]">
                                             <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-3" />
                                             Synchronizing with database...
                                         </td>
                                     </tr>
                                 ) : filteredData().length === 0 ? (
                                     <tr>
-                                        <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                                        <td colSpan={6} className="px-6 py-12 text-center text-[#64748b]">
                                             No records found matching your search.
                                         </td>
                                     </tr>
@@ -194,7 +194,7 @@ export default function AdminDashboard() {
                                         key={i}
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
-                                        className="text-sm text-gray-300 hover:bg-white/5 transition-colors"
+                                        className="text-sm text-slate-600 hover:bg-[#ffffff] transition-colors"
                                     >
                                         {activeTab === "batches" && (
                                             <>
@@ -212,15 +212,15 @@ export default function AdminDashboard() {
                                                         {item.blockchainVerified ? 'Verified' : 'Pending'}
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 text-xs text-gray-500">{new Date(item.createdAt).toLocaleDateString()}</td>
+                                                <td className="px-6 py-4 text-xs text-[#64748b]">{new Date(item.createdAt).toLocaleDateString()}</td>
                                             </>
                                         )}
                                         {activeTab === "events" && (
                                             <>
-                                                <td className="px-6 py-4 font-mono text-xs text-gray-500">{item.txHash?.substring(0, 20)}...</td>
+                                                <td className="px-6 py-4 font-mono text-xs text-[#64748b]">{item.txHash?.substring(0, 20)}...</td>
                                                 <td className="px-6 py-4 text-blue-400">{item.batchId}</td>
                                                 <td className="px-6 py-4">
-                                                    <span className="bg-white/5 px-2 py-1 rounded-lg text-xs">{item.stage}</span>
+                                                    <span className="bg-[#ffffff] px-2 py-1 rounded-lg text-xs">{item.stage}</span>
                                                 </td>
                                                 <td className="px-6 py-4">{item.actorName || 'Actor'}</td>
                                                 <td className="px-6 py-4 text-green-400">✅ 12 Confirmations</td>
@@ -228,15 +228,15 @@ export default function AdminDashboard() {
                                         )}
                                         {activeTab === "users" && (
                                             <>
-                                                <td className="px-6 py-4 font-medium text-white">{item.name}</td>
-                                                <td className="px-6 py-4 text-gray-500">{item.email}</td>
+                                                <td className="px-6 py-4 font-medium text-slate-900">{item.name}</td>
+                                                <td className="px-6 py-4 text-[#64748b]">{item.email}</td>
                                                 <td className="px-6 py-4">
                                                     <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${item.role === 'farmer' ? 'bg-amber-500/10 text-amber-500' : item.role === 'processor' ? 'bg-blue-500/10 text-blue-500' : 'bg-purple-500/10 text-purple-500'}`}>
                                                         {item.role === 'processor' ? 'agri officer' : item.role === 'regulator' ? 'iags / admin' : item.role}
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4 text-xs">{item.district || 'All TN'}</td>
-                                                <td className="px-6 py-4 text-gray-500">{item.mobileNo || 'N/A'}</td>
+                                                <td className="px-6 py-4 text-[#64748b]">{item.mobileNo || 'N/A'}</td>
                                             </>
                                         )}
                                     </motion.tr>
@@ -248,7 +248,7 @@ export default function AdminDashboard() {
 
                 <div className="mt-8 flex justify-center">
                     <Link href="/dashboard/farmer">
-                        <button className="text-gray-500 hover:text-white text-sm transition-colors">
+                        <button className="text-[#64748b] hover:text-slate-900 text-sm transition-colors">
                             ← Back to Dashboard
                         </button>
                     </Link>
@@ -257,3 +257,4 @@ export default function AdminDashboard() {
         </div>
     );
 }
+

@@ -3,9 +3,14 @@ import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
-import { Search, ArrowRight, QrCode } from "lucide-react";
+import { Search, ArrowRight, QrCode, Scan } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+
+const demos = [
+    { id: "TN-DEMO001", crop: "Tomato",  loc: "Dindigul", emoji: "🍅", stage: "Sold" },
+    { id: "TN-DEMO002", crop: "Banana",  loc: "Theni",    emoji: "🍌", stage: "Retail" },
+];
 
 export default function TraceSearchPage() {
     const [batchId, setBatchId] = useState("");
@@ -18,73 +23,88 @@ export default function TraceSearchPage() {
         }
     };
 
-    const demos = [
-        { id: "TN-DEMO001", crop: "Tomato", loc: "Dindigul" },
-        { id: "TN-DEMO002", crop: "Banana", loc: "Theni" },
-    ];
-
     return (
         <div className="min-h-screen">
             <Header />
 
-            <main className="pt-24 pb-20 px-4">
-                <div className="max-w-4xl mx-auto">
+            <main className="pt-20 pb-20 px-4" id="main-content">
+                <div className="max-w-[800px] mx-auto">
+
+                    {/* Header */}
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 16 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="text-center mb-12"
                     >
-                        <h1 className="text-5xl font-black text-white mb-4 font-outfit">
-                            Trace <span className="gradient-text">Anything</span>
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-blue-500/20 bg-blue-500/6 mb-5">
+                            <Search className="w-3.5 h-3.5 text-blue-400" />
+                            <span className="text-[12px] text-blue-400 font-semibold">Blockchain Trace</span>
+                        </div>
+                        <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-3 font-outfit">
+                            Trace Any Batch
                         </h1>
-                        <p className="text-gray-400">Enter a Batch ID to verify its journey from farm to fork.</p>
+                        <p className="text-[#64748b] text-[15px]">
+                            Enter a Batch ID to verify its complete journey from farm to fork.
+                        </p>
                     </motion.div>
 
+                    {/* Search form */}
                     <motion.form
-                        initial={{ opacity: 0, scale: 0.95 }}
+                        initial={{ opacity: 0, scale: 0.97 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.1 }}
                         onSubmit={handleSearch}
-                        className="relative max-w-2xl mx-auto mb-16"
+                        className="relative mb-12"
+                        role="search"
                     >
                         <div className="relative">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#64748b] w-5 h-5" />
                             <input
                                 type="text"
                                 value={batchId}
-                                onChange={(e) => setBatchId(e.target.value)}
+                                onChange={e => setBatchId(e.target.value)}
                                 placeholder="Enter Batch ID (e.g. TN-DEMO001)"
-                                className="w-full bg-black/40 border-2 border-green-500/20 rounded-3xl py-6 px-14 text-white font-bold text-xl focus:border-green-500/60 transition-all outline-none"
+                                aria-label="Batch ID search"
+                                className="agri-input pl-12 pr-[120px] py-4 text-[16px] rounded-2xl"
                             />
-                            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 w-6 h-6" />
                             <button
                                 type="submit"
-                                className="absolute right-3 top-1/2 -translate-y-1/2 bg-green-500 text-white p-3 rounded-2xl hover:bg-green-400 transition-colors"
+                                className="absolute right-2 top-1/2 -translate-y-1/2 btn btn-primary btn-sm px-5"
                             >
-                                <ArrowRight className="w-6 h-6" />
+                                Search
                             </button>
                         </div>
                     </motion.form>
 
-                    <div className="grid md:grid-cols-2 gap-12">
-                        {/* Demo Batches */}
+                    <div className="grid md:grid-cols-2 gap-6">
+                        {/* Demo batches */}
                         <motion.div
-                            initial={{ opacity: 0, x: -20 }}
+                            initial={{ opacity: 0, x: -16 }}
                             animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.2 }}
+                            transition={{ delay: 0.15 }}
                         >
-                            <h3 className="text-white font-bold mb-6 flex items-center gap-2">
-                                <span className="p-1.5 rounded-lg bg-blue-500/20 text-blue-400 text-xs">DEMOS</span>
-                                Try a Demo Batch
-                            </h3>
-                            <div className="space-y-3">
-                                {demos.map((d) => (
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-[11px] text-[#64748b] font-semibold uppercase tracking-widest">
+                                    Demo Batches
+                                </span>
+                            </div>
+                            <div className="space-y-2.5">
+                                {demos.map(d => (
                                     <Link key={d.id} href={`/trace/${d.id}`}>
-                                        <div className="glass-card p-5 border-white/5 hover:border-blue-500/30 transition-all flex justify-between items-center group mb-3">
-                                            <div>
-                                                <div className="text-white font-bold group-hover:text-blue-400 transition-colors">{d.id}</div>
-                                                <div className="text-xs text-gray-500">{d.crop} • {d.loc}</div>
+                                        <div className="card p-4 hover:border-[#cbd5e1] transition-all flex items-center justify-between group cursor-pointer">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-xl bg-[#e2e8f0] flex items-center justify-center text-xl shrink-0">
+                                                    {d.emoji}
+                                                </div>
+                                                <div>
+                                                    <div className="text-[13px] font-semibold text-slate-900 font-mono">{d.id}</div>
+                                                    <div className="text-[12px] text-[#64748b]">{d.crop} · {d.loc}</div>
+                                                </div>
                                             </div>
-                                            <ArrowRight className="text-gray-700 group-hover:text-blue-400 transition-colors w-5 h-5" />
+                                            <div className="flex items-center gap-2">
+                                                <span className="badge badge-verified text-[10px]">{d.stage}</span>
+                                                <ArrowRight className="w-4 h-4 text-[#64748b] group-hover:text-slate-900 group-hover:translate-x-0.5 transition-all" />
+                                            </div>
                                         </div>
                                     </Link>
                                 ))}
@@ -93,30 +113,39 @@ export default function TraceSearchPage() {
 
                         {/* QR Scanner CTA */}
                         <motion.div
-                            initial={{ opacity: 0, x: 20 }}
+                            initial={{ opacity: 0, x: 16 }}
                             animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.3 }}
-                            className="glass-card p-8 border-amber-500/10 flex flex-col justify-between"
+                            transition={{ delay: 0.2 }}
                         >
-                            <div>
-                                <div className="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center mb-6">
-                                    <QrCode className="w-6 h-6" />
-                                </div>
-                                <h3 className="text-xl font-bold text-white mb-2 font-outfit">Have a Product?</h3>
-                                <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                                    If you have a physical package with an AgriTraceIndia QR code, use our mobile-friendly scanner for instant verification.
-                                </p>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-[11px] text-[#64748b] font-semibold uppercase tracking-widest">
+                                    Physical Product
+                                </span>
                             </div>
                             <Link href="/scan">
-                                <button className="w-full py-3 rounded-xl border border-amber-500/40 text-amber-400 font-bold hover:bg-amber-500/5 transition-colors">
-                                    Open Scanner
-                                </button>
+                                <div className="card p-6 hover:border-amber-500/30 transition-all cursor-pointer h-full group">
+                                    <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-4">
+                                        <Scan className="w-5 h-5 text-amber-400" />
+                                    </div>
+                                    <h3 className="text-[15px] font-bold text-slate-900 mb-2">
+                                        Scan a QR Code
+                                    </h3>
+                                    <p className="text-[13px] text-[#64748b] leading-relaxed mb-4">
+                                        Have a physical product with an AgriTraceIndia QR code? Use the mobile-friendly scanner for instant blockchain verification.
+                                    </p>
+                                    <div className="flex items-center gap-1.5 text-[13px] font-semibold text-amber-400 group-hover:gap-2.5 transition-all">
+                                        Open Scanner
+                                        <ArrowRight className="w-4 h-4" />
+                                    </div>
+                                </div>
                             </Link>
                         </motion.div>
                     </div>
                 </div>
             </main>
+
             <Footer />
         </div>
     );
 }
+
